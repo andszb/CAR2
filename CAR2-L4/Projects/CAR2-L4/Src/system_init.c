@@ -5,17 +5,31 @@
  *      Author: AND
  */
 #include "system_init.h"
-#include "stm32l4xx_hal.h"
-#include "stm32l475e_iot01.h"
-#include "stdio.h"
+#include "uart.h"
+
+#define DEBUG_MODE
+
 
 
 //call init functions
-int8_t system_init()
+int8_t systeminit()
 {
 	pin_init();
+	BSP_LED_Init(LED2);
 
+	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 
+	uart_init();
+
+	/* Output without printf, using HAL function*/
+	char msg[] = "UART HAL Example\r\n";
+	HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
+
+	/* Output a message using printf function */
+#ifdef DEBUG_MODE
+	printf("UART Printf Example: retarget the C library printf function to the UART\r\n");
+	printf("** Test finished successfully. ** \r\n");
+#endif
 	return 0;
 }
 
@@ -46,7 +60,6 @@ int8_t portA_init()
 #endif
 
 	//Initialize D11 and D12 (PA6 and PA7) as LED output
-	GPIO_InitTypeDef GPIO_Init;
 	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_Init.Pull = GPIO_NOPULL;
 	GPIO_Init.Speed = GPIO_SPEED_FAST;
@@ -82,6 +95,7 @@ int8_t portB_init()
 	return 0;
 }
 
+// init portD pins
 int8_t portD_init()
 {
 	__HAL_RCC_GPIOD_CLK_ENABLE();
