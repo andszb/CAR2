@@ -91,6 +91,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Src/stm32l4xx_timebase_lptim.c</locationURI>
 		</link>
 		<link>
+			<name>Applications/User/system_init.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Src/system_init.c</locationURI>
+		</link>
+		<link>
 			<name>Applications/User/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Src/uart.c</locationURI>
