@@ -93,7 +93,7 @@
 		<link>
 			<name>Applications/User/system_init.c</name>
 			<type>1</type>
-			<location>C:/Users/AND/greenfox/CAR2/CAR2-L4/Projects/CAR2-L4/Src/system_init.c</location>
+			<locationURI>PARENT-2-PROJECT_LOC/Src/system_init.c</locationURI>
 		</link>
 		<link>
 			<name>Applications/User/uart.c</name>
