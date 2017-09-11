@@ -125,16 +125,9 @@ int8_t system_init()
 		return -1;
 	}
 
-	adc_init();			// 8-bit ADC
-
-	adc_12b_init();		// 12-bit ADC
-
 	if (proximity_driver_init() != OK) {
 		return -1;
 	}
-
-	pin_init();
-	set_direction(1);
 
 	return 0;
 }
