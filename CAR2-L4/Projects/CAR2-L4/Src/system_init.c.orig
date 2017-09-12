@@ -1,5 +1,11 @@
 
 #include "system_init.h"
+<<<<<<< HEAD
+#include "uart.h"
+
+#define DEBUG_MODE
+
+=======
 
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
@@ -11,6 +17,7 @@ int8_t portB_init();
 int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
+>>>>>>> origin/Zoli
 
 
 //call init functions
@@ -77,10 +84,20 @@ int8_t portA_init()
 #endif
 
 	//Initialize D11 and D12 (PA6 and PA7) as LED output
+<<<<<<< HEAD
+	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Init.Pull = GPIO_NOPULL;
+	GPIO_Init.Speed = GPIO_SPEED_FAST;
+	GPIO_Init.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+	HAL_GPIO_Init(GPIOA, &GPIO_Init);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+=======
 	GPIO_InitDef.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
 
+>>>>>>> origin/Zoli
 #ifdef DEBUG_MODE
 	printf("Proxim LED init done.\n");
 #endif
@@ -136,7 +153,11 @@ int8_t portB_init()
 	return 0;
 }
 
+<<<<<<< HEAD
 // init portD pins
+=======
+
+>>>>>>> origin/Zoli
 int8_t portD_init()
 {
 	__HAL_RCC_GPIOD_CLK_ENABLE();

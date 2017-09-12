@@ -2,9 +2,9 @@
 #ifndef __MOTOR_CONTROL_H
 #define __MOTOR_CONTROL_H
 
-/* Includes ------------------------------------------------------------------*/
+#include "system_init.h"
+#include "cmsis_os.h"
 
-
-/* Exported constants --------------------------------------------------------*/
+void motor_pwm_set_duty(float duty);
 
 #endif /* __MOTOR_CONTROL_H */
