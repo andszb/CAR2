@@ -1,8 +1,4 @@
 #include "motor_control.h"
-#include "cmsis_os.h"
-#include "pwm_driver.h"
-#include "adc_driver.h"
-#include "main.h"
 
 float ctrler_out_min = 0;
 float ctrler_out_max = 100;
@@ -98,4 +94,14 @@ void decelerate()
 {
 	duty *= 0.8;
 	motor_pwm_set_duty(duty);
+}
+
+
+void motor_pwm_set_duty(float duty)
+{
+	uint32_t pulse = motor_pwm_handle.Init.Period * (duty / 100.0);
+	motor_pwm_oc_init.Pulse = pulse;
+	HAL_TIM_PWM_ConfigChannel(&motor_pwm_handle, &motor_pwm_oc_init, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&motor_pwm_handle, TIM_CHANNEL_1);
+	return;
 }

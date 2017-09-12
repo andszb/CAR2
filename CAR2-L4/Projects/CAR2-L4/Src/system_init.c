@@ -1,20 +1,8 @@
-/*
- * system_init.c
- *
- *  Created on: 2017. szept. 11.
- *      Author: AND
- */
+
 #include "system_init.h"
-#include "stm32l4xx_hal.h"
-#include "stm32l475e_iot01.h"
-#include "stdio.h"
 
 GPIO_InitTypeDef GPIO_InitDef;
-TIM_HandleTypeDef servo_pwm_handle;
-TIM_HandleTypeDef motor_pwm_handle;
 TIM_HandleTypeDef proxi_pwm_handle;
-TIM_OC_InitTypeDef servo_pwm_oc_init;
-TIM_OC_InitTypeDef motor_pwm_oc_init;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
 
 int8_t pin_init();
@@ -23,6 +11,7 @@ int8_t portB_init();
 int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
+
 
 //call init functions
 int8_t system_init()
@@ -33,6 +22,7 @@ int8_t system_init()
 	return 0;
 }
 
+
 //call port init functions
 int8_t pin_init()
 {
@@ -41,6 +31,7 @@ int8_t pin_init()
 	portD_init();
 	return 0;
 }
+
 
 // init port A pins
 int8_t portA_init()
@@ -86,6 +77,7 @@ int8_t portA_init()
 	return 0;
 }
 
+
 // init port B pins
 int8_t portB_init()
 {
@@ -128,6 +120,7 @@ int8_t portB_init()
 	return 0;
 }
 
+
 int8_t portD_init()
 {
 	__HAL_RCC_GPIOD_CLK_ENABLE();
@@ -149,6 +142,7 @@ int8_t portD_init()
 
 	return 0;
 }
+
 
 int8_t servo_pwm_init()
 {
@@ -172,6 +166,7 @@ int8_t servo_pwm_init()
 
 	return 0;
 }
+
 
 int8_t motor_pwm_init()
 {
