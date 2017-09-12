@@ -14,7 +14,7 @@
 //call init functions
 int8_t systeminit()
 {
-	pin_init();
+
 	BSP_LED_Init(LED2);
 
 	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
@@ -30,6 +30,9 @@ int8_t systeminit()
 	printf("UART Printf Example: retarget the C library printf function to the UART\r\n");
 	printf("** Test finished successfully. ** \r\n");
 #endif
+	//call pin init functions
+	pin_init();
+
 	return 0;
 }
 

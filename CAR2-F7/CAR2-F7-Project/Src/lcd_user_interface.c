@@ -2,7 +2,7 @@
 #include "socket_server.h"
 
 TS_StateTypeDef ts_state;
-void draw_triangle(uint8_t line, Point point1, Point point2, Point point3);
+//void draw_triangle(uint8_t line, Point point1, Point point2, Point point3);
 
 void draw_background()
 {
@@ -87,6 +87,7 @@ void draw_proximity_sensor_data(uint32_t distance)
 	} else if ((distance < 30) && (distance > 1)) {
 		BSP_LCD_SetTextColor(LCD_COLOR_RED);
 		BSP_LCD_FillRect(16, 103, 449, 50);
+		osDelay(20);
 		BSP_LCD_SetTextColor(LCD_COLOR_GRAY);
 		BSP_LCD_DisplayStringAt(0, 120, (uint8_t *)"DANGER", CENTER_MODE);
 		osDelay(10);
