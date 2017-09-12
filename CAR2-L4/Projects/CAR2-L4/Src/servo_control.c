@@ -5,11 +5,12 @@ const float ctrler_out_max = 36.0;
 float p_value = 0.1;
 float d_value = 0.1;
 int16_t error = 0;
+int16_t sensor_number = 0;  //temp variable for testing
 int16_t prev_error = 0;
 int16_t difference = 0;
 float ctrler_out = 0.0;
 
-void set_servo_angle(float angle);
+
 void servo_pwm_set_duty(float duty);
 float pd_control();
 

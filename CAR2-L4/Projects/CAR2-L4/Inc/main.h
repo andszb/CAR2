@@ -52,7 +52,6 @@
 #include "stm32l4xx_hal.h"
 #include "stm32l475e_iot01.h"
 #include "stdio.h"
-#include "system_init.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

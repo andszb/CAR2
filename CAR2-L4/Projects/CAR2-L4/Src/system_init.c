@@ -1,5 +1,7 @@
 
 #include "system_init.h"
+#include "uart.h"
+#include <string.h>
 
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
@@ -25,7 +27,7 @@ int8_t systeminit()
 
 	/* Output without printf, using HAL function*/
 	char msg[] = "UART HAL Example\r\n";
-	HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
+	HAL_UART_Transmit(&uart_handle, (uint8_t *)msg, strlen(msg), 100);
 
 	/* Output a message using printf function */
 #ifdef DEBUG_MODE

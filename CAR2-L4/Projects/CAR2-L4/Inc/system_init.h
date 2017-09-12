@@ -10,7 +10,7 @@ TIM_HandleTypeDef motor_pwm_handle;
 TIM_OC_InitTypeDef servo_pwm_oc_init;
 TIM_OC_InitTypeDef motor_pwm_oc_init;
 
-int8_t system_init();
+int8_t systeminit();
 
 #endif /* __SYSTEM_INIT_H */
 
