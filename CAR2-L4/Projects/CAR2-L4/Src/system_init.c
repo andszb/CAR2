@@ -11,16 +11,18 @@
 
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef servo_pwm_handle;
+TIM_HandleTypeDef motor_pwm_handle;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef servo_pwm_oc_init;
 TIM_OC_InitTypeDef motor_pwm_oc_init;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
 
-int8_t system_init();
 int8_t pin_init();
 int8_t portA_init();
 int8_t portB_init();
 int8_t portD_init();
+int8_t servo_pwm_init();
+int8_t motor_pwm_init();
 
 //call init functions
 int8_t system_init()
@@ -144,6 +146,52 @@ int8_t portD_init()
 	HAL_GPIO_Init(GPIOD, &GPIO_InitDef);
 
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+
+	return 0;
+}
+
+int8_t servo_pwm_init()
+{
+	// TIM3 init as PWM, 50 Hz
+	__HAL_RCC_TIM3_CLK_ENABLE();
+	servo_pwm_handle.Instance = TIM3;
+	servo_pwm_handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	servo_pwm_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	servo_pwm_handle.Init.Period = 31380;
+	servo_pwm_handle.Init.Prescaler = 50;
+	if (HAL_TIM_PWM_Init(&servo_pwm_handle) != HAL_OK) {
+		return -1;
+	}
+
+	servo_pwm_oc_init.OCFastMode = TIM_OCFAST_DISABLE;
+	servo_pwm_oc_init.OCIdleState = TIM_OCIDLESTATE_RESET;
+	servo_pwm_oc_init.OCMode = TIM_OCMODE_PWM1;
+	servo_pwm_oc_init.OCPolarity = TIM_OCPOLARITY_HIGH;
+	servo_pwm_oc_init.Pulse = 2354;
+	HAL_TIM_PWM_ConfigChannel(&servo_pwm_handle, &servo_pwm_oc_init, TIM_CHANNEL_1);
+
+	return 0;
+}
+
+int8_t motor_pwm_init()
+{
+	// TIM2 init as PWM, 1 kHz
+	__HAL_RCC_TIM2_CLK_ENABLE();
+	motor_pwm_handle.Instance = TIM2;
+	motor_pwm_handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	motor_pwm_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	motor_pwm_handle.Init.Period = 16000;
+	motor_pwm_handle.Init.Prescaler = 4;
+	if (HAL_TIM_PWM_Init(&motor_pwm_handle) != HAL_OK) {
+		return -1;
+	}
+
+	motor_pwm_oc_init.OCFastMode = TIM_OCFAST_DISABLE;
+	motor_pwm_oc_init.OCIdleState = TIM_OCIDLESTATE_RESET;
+	motor_pwm_oc_init.OCMode = TIM_OCMODE_PWM1;
+	motor_pwm_oc_init.OCPolarity = TIM_OCPOLARITY_HIGH;
+	motor_pwm_oc_init.Pulse = 4000;
+	HAL_TIM_PWM_ConfigChannel(&motor_pwm_handle, &motor_pwm_oc_init, TIM_CHANNEL_1);
 
 	return 0;
 }

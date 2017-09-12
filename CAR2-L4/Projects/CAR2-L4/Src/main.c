@@ -46,6 +46,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "system_init.h"
 #include "uart.h"
 #include "adc_driver.h"
 #include "pwm_driver.h"
@@ -63,8 +64,6 @@
 static void GPIO_ConfigAN(void);
 static void SystemClock_Config(void);
 static void StartThread(void const * argument);
-
-int8_t system_init();
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -94,49 +93,6 @@ int main(void)
 
 	/* We should never get here as control is now taken by the scheduler */
 	for (;;);
-}
-
-
-int8_t system_init()
-{
-	BSP_LED_Init(LED2);
-
-	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
-
-	uart_init();
-
-	/* Output without printf, using HAL function*/
-	char msg[] = "UART HAL Example\r\n";
-	HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
-
-	/* Output a message using printf function */
-	printf("UART Printf Example: retarget the C library printf function to the UART\r\n");
-	printf("** Test finished successfully. ** \r\n");
-
-/*	if (wifi_init() != OK) {
-		return -1;
-	}
-
-	if (servo_pwm_init() != OK) {
-		return -1;
-	}
-
-	if (motor_pwm_init() != OK) {
-		return -1;
-	}
-
-	adc_init();			// 8-bit ADC
-
-	adc_12b_init();		// 12-bit ADC
-
-	if (proximity_driver_init() != OK) {
-		return -1;
-	}
-
-	pin_init();
-	set_direction(1);
-*/
-	return 0;
 }
 
 
