@@ -46,6 +46,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Src/adc_driver.c</locationURI>
 		</link>
 		<link>
+			<name>Applications/User/control.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Src/control.c</locationURI>
+		</link>
+		<link>
 			<name>Applications/User/low_power_tick_management_LPTIM.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Src/low_power_tick_management_LPTIM.c</locationURI>
@@ -64,11 +69,6 @@
 			<name>Applications/User/proximity_driver.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Src/proximity_driver.c</locationURI>
-		</link>
-		<link>
-			<name>Applications/User/pwm_driver.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Src/pwm_driver.c</locationURI>
 		</link>
 		<link>
 			<name>Applications/User/servo_control.c</name>
