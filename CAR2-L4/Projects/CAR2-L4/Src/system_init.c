@@ -4,6 +4,9 @@
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
+ADC_HandleTypeDef adc_handle;
+ADC_ChannelConfTypeDef adc_ch_conf;
+ADC_HandleTypeDef adc_12b_handle;
 
 int8_t pin_init();
 int8_t portA_init();
@@ -189,4 +192,49 @@ int8_t motor_pwm_init()
 	HAL_TIM_PWM_ConfigChannel(&motor_pwm_handle, &motor_pwm_oc_init, TIM_CHANNEL_1);
 
 	return 0;
+}
+
+
+void adc_init()
+{
+	__HAL_RCC_ADC_CLK_ENABLE();
+
+	adc_handle.State = HAL_ADC_STATE_RESET;
+	adc_handle.Instance = ADC1;
+	adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
+	adc_handle.Init.Resolution = ADC_RESOLUTION_8B;
+	adc_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+	adc_handle.Init.DMAContinuousRequests = DISABLE;
+	adc_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	adc_handle.Init.ContinuousConvMode = DISABLE;
+	adc_handle.Init.DiscontinuousConvMode = DISABLE;
+	adc_handle.Init.ScanConvMode = DISABLE;
+	adc_handle.Init.NbrOfConversion = 1;
+	HAL_ADC_Init(&adc_handle);
+
+	adc_ch_conf.Offset = 0;
+	adc_ch_conf.Rank = 1;
+	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
+}
+
+
+void adc_12b_init()		// ADC2 channel 7 on pin D10 (PA2)
+{
+	adc_12b_handle.State = HAL_ADC_STATE_RESET;
+	adc_12b_handle.Instance = ADC2;
+	adc_12b_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+	adc_12b_handle.Init.Resolution = ADC_RESOLUTION_12B;
+	adc_12b_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+	adc_12b_handle.Init.DMAContinuousRequests = DISABLE;
+	adc_12b_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	adc_12b_handle.Init.ContinuousConvMode = DISABLE;
+	adc_12b_handle.Init.DiscontinuousConvMode = DISABLE;
+	adc_12b_handle.Init.ScanConvMode = DISABLE;
+	HAL_ADC_Init(&adc_12b_handle);
+
+	adc_ch_conf.Channel = ADC_CHANNEL_7;
+	adc_ch_conf.Offset = 0;
+	adc_ch_conf.Rank = 1;
+	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
+	HAL_ADC_ConfigChannel(&adc_12b_handle, &adc_ch_conf);
 }
