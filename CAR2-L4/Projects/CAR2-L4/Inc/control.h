@@ -3,6 +3,9 @@
 #define __CONTROL_H
 
 #include "cmsis_os.h"
+#include "servo_control.h"
+#include "motor_control.h"
+#include "main.h"
 
 void control_thread();
 
