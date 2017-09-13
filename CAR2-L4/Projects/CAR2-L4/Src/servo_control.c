@@ -10,9 +10,7 @@ int16_t prev_error = 0;
 int16_t difference = 0;
 float ctrler_out = 0.0;
 
-
 void servo_pwm_set_duty(float duty);
-float pd_control();
 
 void set_servo_angle(float angle)
 {

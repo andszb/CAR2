@@ -1,18 +1,13 @@
 #include "control.h"
 
-float pdcontrol;
-float picontrol;
 
 void control_thread()
 {
 	while (1) {
-
-		pdcontrol = pd_control();
-		picontrol = pi_control();
 // 		determine line position
-		set_servo_angle(pdcontrol);
+		set_servo_angle(pd_control());
 //		determine required rpm
-		motor_pwm_set_duty(picontrol);
+		motor_pwm_set_duty(pi_control());
 		osDelay(10);
 	}
 
