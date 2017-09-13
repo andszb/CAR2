@@ -1,15 +1,15 @@
 #include "motor_control.h"
 
-float ctrler_out_min = 0;
-float ctrler_out_max = 100;
+const float m_ctrler_out_min = 0;
+const float m_ctrler_out_max = 100;
 
-float p_value = 0.1;
+float motor_p_value = 0.1;
 float i_value = 0.1;
-int16_t error = 0;
+int16_t motor_error = 0;
 int16_t integral = 0;
 int16_t required_rpm = 0;
 int16_t measured_rpm = 0;
-float ctrler_out = 0.0;
+float m_ctrler_out = 0.0;
 float duty;
 
 void print_float(float value, int decimal_digits);
@@ -42,18 +42,18 @@ void set_direction(int8_t dir)
 
 float pi_control()
 {
-	error = required_rpm - measured_rpm;
-	integral += error;
-	ctrler_out = p_value * (float)error + i_value * (float)integral;
-	if (ctrler_out < ctrler_out_min) {
-		ctrler_out = ctrler_out_min;
-		integral -= error;
+	motor_error = required_rpm - measured_rpm;
+	integral += motor_error;
+	m_ctrler_out = motor_p_value * (float)motor_error + i_value * (float)integral;
+	if (m_ctrler_out < m_ctrler_out_min) {
+		m_ctrler_out = m_ctrler_out_min;
+		integral -= motor_error;
 	}
-	else if (ctrler_out > ctrler_out_max) {
-		ctrler_out = ctrler_out_max;
-		integral -= error;
+	else if (m_ctrler_out > m_ctrler_out_max) {
+		m_ctrler_out = m_ctrler_out_max;
+		integral -= motor_error;
 	}
-	return ctrler_out;
+	return m_ctrler_out;
 }
 
 
