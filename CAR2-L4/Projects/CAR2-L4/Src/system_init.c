@@ -3,6 +3,8 @@
 #include "uart.h"
 #include <string.h>
 
+#define DEBUG_MODE
+
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;

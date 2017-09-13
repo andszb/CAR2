@@ -16,6 +16,8 @@
 uint8_t object_flag;
 uint32_t distance;
 
+uint32_t read_proximity_data();
+uint8_t process_proximity(uint32_t distance);
 int8_t proximity_control_thread();
 
 #endif /* APPLICATIONS_USER_PROXIMITY_DRIVER_H_ */

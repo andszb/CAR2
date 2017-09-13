@@ -1,7 +1,7 @@
 #include "proximity_driver.h"
 #include "cmsis_os.h"
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 uint32_t proxim1_cntr = 0;
 uint32_t proxim2_cntr = 0;
@@ -10,8 +10,7 @@ uint32_t cm_cntr = 0;
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-uint32_t read_proximity_data();
-uint8_t process_proximity(uint32_t distance);
+
 
 void proximity1_send_trigger();
 void proximity2_send_trigger();
@@ -76,8 +75,9 @@ uint32_t read_proximity_data()
 {
 	uint8_t measure_failed = 0;
 	uint32_t sum = 0;
+	uint8_t error_filter = 1;
 
-	for (int i = 0; i < 10; i++){
+	for (int i = 0; i < error_filter; i++){
 
 		cm_cntr = 0;
 		proxim1_cntr = 0;
@@ -119,7 +119,7 @@ uint32_t read_proximity_data()
 		}
 	}
 
-	distance = sum / (2 * (10 - measure_failed));
+	distance = sum / (2 * (error_filter - measure_failed));
 #ifdef DEBUG_MODE
 	printf("distance: %lu, failure: %d\n\n", distance, measure_failed);
 #endif
