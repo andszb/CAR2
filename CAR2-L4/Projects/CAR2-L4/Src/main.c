@@ -84,6 +84,8 @@ int main(void)
 		return -1;
 	}
 
+	proximity_control_thread();
+
 	/* Init thread */
 	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
 	osThreadCreate (osThread(Start), NULL);
@@ -103,8 +105,8 @@ int main(void)
   */
 static void StartThread(void const * argument)
 {
-	osThreadDef(control, control_thread, osPriorityHigh, 0, configMINIMAL_STACK_SIZE * 2);
-	osThreadCreate(osThread(control), NULL);
+//	osThreadDef(control, control_thread, osPriorityHigh, 0, configMINIMAL_STACK_SIZE * 2);
+//	osThreadCreate(osThread(control), NULL);
 
 //	osThreadDef(servo, servo_control_thread, osPriorityAboveNormal, 0, configMINIMAL_STACK_SIZE);
 //	volatile osThreadId s = osThreadCreate(osThread(servo), NULL);
