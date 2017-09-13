@@ -6,7 +6,4 @@
 void set_servo_angle(float angle);
 float pd_control();
 
-void set_servo_angle(float angle);
-float pd_control();
-
 #endif /* __SERVO_CONTROL_H */

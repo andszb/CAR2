@@ -22,7 +22,6 @@ int8_t motor_pwm_init();
 //call init functions
 int8_t system_init()
 {
-
 	BSP_LED_Init(LED2);
 
 	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
@@ -50,6 +49,7 @@ int8_t pin_init()
 {
 	portA_init();
 	portB_init();
+	portC_init();
 	portD_init();
 	return 0;
 }
@@ -66,6 +66,7 @@ int8_t portA_init()
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Digital ADC pins init done.\n");
@@ -86,6 +87,7 @@ int8_t portA_init()
 	GPIO_InitDef.Mode = GPIO_MODE_AF_PP;
 	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	GPIO_InitDef.Alternate = GPIO_AF1_TIM2;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Motor PWM pin init done.\n");
@@ -95,12 +97,11 @@ int8_t portA_init()
 	GPIO_InitDef.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Proxim LED init done.\n");
 #endif
-
-	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
@@ -120,6 +121,7 @@ int8_t portB_init()
 	GPIO_InitDef.Pin = GPIO_PIN_0;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Proxim trigger1 init done.\n");
@@ -130,6 +132,7 @@ int8_t portB_init()
 	GPIO_InitDef.Mode = GPIO_MODE_AF_PP;
 	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	GPIO_InitDef.Alternate = GPIO_AF2_TIM3;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Servo PWM pin init done.\n");
@@ -139,12 +142,11 @@ int8_t portB_init()
 	GPIO_InitDef.Pin = GPIO_PIN_1 | GPIO_PIN_2;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Motor direction pin init done.\n");
 #endif
-
-	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 
@@ -162,12 +164,12 @@ int8_t portC_init()
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Analog ADC pins init done.\n");
 #endif
 
-	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 	return 0;
 }
@@ -183,12 +185,11 @@ int8_t portD_init()
 	GPIO_InitDef.Pin = GPIO_PIN_14;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Proxim trigger2 init done.\n");
 #endif
-
-	HAL_GPIO_Init(GPIOD, &GPIO_InitDef);
 
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
 
