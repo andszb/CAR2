@@ -4,4 +4,7 @@
 
 #include "system_init.h"
 
+void set_servo_angle(float angle);
+float pd_control();
+
 #endif /* __SERVO_CONTROL_H */

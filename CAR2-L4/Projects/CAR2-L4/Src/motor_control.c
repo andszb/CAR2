@@ -12,7 +12,6 @@ int16_t measured_rpm = 0;
 float ctrler_out = 0.0;
 float duty;
 
-float pi_control();
 void print_float(float value, int decimal_digits);
 
 

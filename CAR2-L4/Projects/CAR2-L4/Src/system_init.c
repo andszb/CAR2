@@ -11,6 +11,7 @@ ADC_HandleTypeDef adc_12b_handle;
 int8_t pin_init();
 int8_t portA_init();
 int8_t portB_init();
+int8_t portC_init();
 int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
@@ -43,11 +44,19 @@ int8_t portA_init()
 
 	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 
+	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
+	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
+	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
+	GPIO_InitDef.Pull = GPIO_NOPULL;
+
+#ifdef DEBUG_MODE
+	printf("Digital ADC pins init done.\n");
+#endif
+
 	//init D4 (PA3) pin EXTI mode
 	GPIO_InitDef.Pin = GPIO_PIN_3;
 	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING_FALLING;
 	GPIO_InitDef.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
 	printf("Proxim EXTI pin init done.\n");
@@ -119,6 +128,27 @@ int8_t portB_init()
 	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
+	return 0;
+}
+
+
+int8_t portC_init()
+{
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
+
+	// Initialize pins A0 - A5 (PC5 - PC0) as ADC input
+	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
+	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
+	GPIO_InitDef.Pull = GPIO_NOPULL;
+
+#ifdef DEBUG_MODE
+	printf("Analog ADC pins init done.\n");
+#endif
+
+	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 	return 0;
 }
@@ -237,4 +267,59 @@ void adc_12b_init()		// ADC2 channel 7 on pin D10 (PA2)
 	adc_ch_conf.Rank = 1;
 	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
 	HAL_ADC_ConfigChannel(&adc_12b_handle, &adc_ch_conf);
+}
+
+
+void a0_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_14;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void a1_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_13;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void a2_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_4;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void a3_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_3;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void a4_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_2;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void a5_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_1;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void d0_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_6;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void d1_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_5;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void d7_adc_init()
+{
+	adc_ch_conf.Channel = ADC_CHANNEL_9;
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 }

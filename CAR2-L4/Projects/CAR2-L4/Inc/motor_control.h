@@ -6,5 +6,6 @@
 #include "cmsis_os.h"
 
 void motor_pwm_set_duty(float duty);
+float pi_control();
 
 #endif /* __MOTOR_CONTROL_H */
