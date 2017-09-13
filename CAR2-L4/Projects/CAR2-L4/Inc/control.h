@@ -5,6 +5,7 @@
 #include "cmsis_os.h"
 #include "servo_control.h"
 #include "motor_control.h"
+#include "proximity_driver.h"
 #include "main.h"
 
 void control_thread();

@@ -3,20 +3,30 @@
 #include "uart.h"
 #include <string.h>
 
+#define DEBUG_MODE
+
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
+TIM_HandleTypeDef proxim_timer_handle;
 ADC_HandleTypeDef adc_handle;
 ADC_ChannelConfTypeDef adc_ch_conf;
 ADC_HandleTypeDef adc_12b_handle;
 
-int8_t pin_init();
+int8_t pins_init();
+int8_t timers_init();
+int8_t interrupts_init();
 int8_t portA_init();
 int8_t portB_init();
 int8_t portC_init();
 int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
+int8_t proximity_timer_init();
+static void EXTI3_IRQHandler_Config(void);
+int8_t proximity_exti_init();
+
+
 
 
 //call init functions
@@ -38,14 +48,20 @@ int8_t system_init()
 	printf("** Test finished successfully. ** \r\n");
 #endif
 	//call pin init functions
-	pin_init();
+	pins_init();
+
+	//call timers init functions
+	timers_init();
+
+	//call interrups init functions
+	interrupts_init();
 
 	return 0;
 }
 
 
 //call port init functions
-int8_t pin_init()
+int8_t pins_init()
 {
 	portA_init();
 	portB_init();
@@ -54,13 +70,28 @@ int8_t pin_init()
 	return 0;
 }
 
+//call timers init functions
+int8_t timers_init()
+{
+	servo_pwm_init();
+	motor_pwm_init();
+	proximity_timer_init();
 
+	return 0;
+
+}
+
+int8_t interrupts_init()
+{
+	proximity_exti_init();
+
+	return 0;
+
+}
 // init port A pins
 int8_t portA_init()
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 
 	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
@@ -73,6 +104,7 @@ int8_t portA_init()
 #endif
 
 	//init D4 (PA3) pin EXTI mode
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 	GPIO_InitDef.Pin = GPIO_PIN_3;
 	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING_FALLING;
 	GPIO_InitDef.Pull = GPIO_PULLUP;
@@ -96,7 +128,7 @@ int8_t portA_init()
 	//Initialize D11 and D12 (PA6 and PA7) as LED output
 	GPIO_InitDef.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
@@ -158,12 +190,11 @@ int8_t portC_init()
 {
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
-
 	// Initialize pins A0 - A5 (PC5 - PC0) as ADC input
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
@@ -244,6 +275,32 @@ int8_t motor_pwm_init()
 	return 0;
 }
 
+int8_t proximity_timer_init()
+{
+	//init TIM4_CH3 10 kHz x 0,58 = 1 periode / 1 cm
+	__HAL_RCC_TIM4_CLK_ENABLE();
+	HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
+	HAL_NVIC_EnableIRQ(TIM4_IRQn);
+
+	proxim_timer_handle.Instance = TIM4;
+	proxim_timer_handle.State = HAL_TIM_STATE_RESET;
+	proxim_timer_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_3;
+	proxim_timer_handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	proxim_timer_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	proxim_timer_handle.Init.Period = 928;
+	proxim_timer_handle.Init.Prescaler = 4;
+	if (HAL_TIM_Base_Init(&proxim_timer_handle) != HAL_OK) {
+		return -1;
+	}
+	if (HAL_TIM_Base_Start_IT(&proxim_timer_handle) != HAL_OK) {
+		return -1;
+	}
+
+#ifdef DEBUG_MODE
+	printf("TIM4 init done.\n");
+#endif
+	return 0;
+}
 
 void adc_init()
 {
@@ -343,3 +400,23 @@ void d7_adc_init()
 	adc_ch_conf.Channel = ADC_CHANNEL_9;
 	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 }
+
+static void EXTI3_IRQHandler_Config(void)
+{
+	/* Enable and set EXTI lines 3 Interrupt to priority 3*/
+	HAL_NVIC_SetPriority(EXTI3_IRQn, 3, 0);
+	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+}
+
+int8_t proximity_exti_init()
+{
+	//init D4 (PA3) EXTI mode
+	EXTI3_IRQHandler_Config();
+#ifdef DEBUG_MODE
+	printf("Proxim sensor init done.\n");
+#endif
+	return 0;
+}
+
+
+
