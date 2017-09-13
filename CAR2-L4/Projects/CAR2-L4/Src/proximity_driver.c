@@ -129,7 +129,7 @@ uint32_t read_proximity_data()
 uint8_t process_proximity(uint32_t distance)
 {
 	object_flag = 0;
-	if (distance < 30) {
+	if ((distance < 30) && (distance > 8)) {
 
 			//stop_drive();
 			object_flag = 40;

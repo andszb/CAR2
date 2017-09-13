@@ -128,7 +128,7 @@ int8_t portA_init()
 	//Initialize D11 and D12 (PA6 and PA7) as LED output
 	GPIO_InitDef.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE

@@ -5,6 +5,7 @@ void control_thread()
 {
 	while (1) {
 
+//		check for any object
 		uint32_t measured_distance = read_proximity_data();
 		process_proximity(measured_distance);
 #ifdef DEBUG_MODE
