@@ -43,9 +43,9 @@
 
 #define portMAX_16_BIT_NUMBER	       ( 0xffffUL )
 
-extern LPTIM_HandleTypeDef             LptimHandle;
+//extern LPTIM_HandleTypeDef             LptimHandle;
 
-extern uint32_t uwTick;
+//extern uint32_t uwTick;
 
 void vPortSetupTimerInterrupt( void );
 

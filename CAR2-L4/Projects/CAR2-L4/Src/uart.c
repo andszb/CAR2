@@ -9,7 +9,7 @@
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 
-UART_HandleTypeDef uart_handle;
+
 
 void uart_init()
 {

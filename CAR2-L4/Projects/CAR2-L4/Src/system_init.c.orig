@@ -1,26 +1,27 @@
 
 #include "system_init.h"
+<<<<<<< HEAD
 #include "uart.h"
-#include <string.h>
+
+#define DEBUG_MODE
+
+=======
 
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
-ADC_HandleTypeDef adc_handle;
-ADC_ChannelConfTypeDef adc_ch_conf;
-ADC_HandleTypeDef adc_12b_handle;
 
 int8_t pin_init();
 int8_t portA_init();
 int8_t portB_init();
-int8_t portC_init();
 int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
+>>>>>>> origin/Zoli
 
 
 //call init functions
-int8_t system_init()
+int8_t systeminit()
 {
 
 	BSP_LED_Init(LED2);
@@ -31,7 +32,7 @@ int8_t system_init()
 
 	/* Output without printf, using HAL function*/
 	char msg[] = "UART HAL Example\r\n";
-	HAL_UART_Transmit(&uart_handle, (uint8_t *)msg, strlen(msg), 100);
+	HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
 
 	/* Output a message using printf function */
 #ifdef DEBUG_MODE
@@ -62,15 +63,6 @@ int8_t portA_init()
 
 	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 
-	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
-	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
-	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
-
-#ifdef DEBUG_MODE
-	printf("Digital ADC pins init done.\n");
-#endif
-
 	//init D4 (PA3) pin EXTI mode
 	GPIO_InitDef.Pin = GPIO_PIN_3;
 	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING_FALLING;
@@ -92,10 +84,20 @@ int8_t portA_init()
 #endif
 
 	//Initialize D11 and D12 (PA6 and PA7) as LED output
+<<<<<<< HEAD
+	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Init.Pull = GPIO_NOPULL;
+	GPIO_Init.Speed = GPIO_SPEED_FAST;
+	GPIO_Init.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+	HAL_GPIO_Init(GPIOA, &GPIO_Init);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+=======
 	GPIO_InitDef.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
 
+>>>>>>> origin/Zoli
 #ifdef DEBUG_MODE
 	printf("Proxim LED init done.\n");
 #endif
@@ -151,28 +153,11 @@ int8_t portB_init()
 	return 0;
 }
 
+<<<<<<< HEAD
+// init portD pins
+=======
 
-int8_t portC_init()
-{
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
-
-	// Initialize pins A0 - A5 (PC5 - PC0) as ADC input
-	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
-	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
-
-#ifdef DEBUG_MODE
-	printf("Analog ADC pins init done.\n");
-#endif
-
-	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
-
-	return 0;
-}
-
-
+>>>>>>> origin/Zoli
 int8_t portD_init()
 {
 	__HAL_RCC_GPIOD_CLK_ENABLE();
@@ -241,104 +226,4 @@ int8_t motor_pwm_init()
 	HAL_TIM_PWM_ConfigChannel(&motor_pwm_handle, &motor_pwm_oc_init, TIM_CHANNEL_1);
 
 	return 0;
-}
-
-
-void adc_init()
-{
-	__HAL_RCC_ADC_CLK_ENABLE();
-
-	adc_handle.State = HAL_ADC_STATE_RESET;
-	adc_handle.Instance = ADC1;
-	adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
-	adc_handle.Init.Resolution = ADC_RESOLUTION_8B;
-	adc_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
-	adc_handle.Init.DMAContinuousRequests = DISABLE;
-	adc_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	adc_handle.Init.ContinuousConvMode = DISABLE;
-	adc_handle.Init.DiscontinuousConvMode = DISABLE;
-	adc_handle.Init.ScanConvMode = DISABLE;
-	adc_handle.Init.NbrOfConversion = 1;
-	HAL_ADC_Init(&adc_handle);
-
-	adc_ch_conf.Offset = 0;
-	adc_ch_conf.Rank = 1;
-	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
-}
-
-
-void adc_12b_init()		// ADC2 channel 7 on pin D10 (PA2)
-{
-	adc_12b_handle.State = HAL_ADC_STATE_RESET;
-	adc_12b_handle.Instance = ADC2;
-	adc_12b_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
-	adc_12b_handle.Init.Resolution = ADC_RESOLUTION_12B;
-	adc_12b_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
-	adc_12b_handle.Init.DMAContinuousRequests = DISABLE;
-	adc_12b_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	adc_12b_handle.Init.ContinuousConvMode = DISABLE;
-	adc_12b_handle.Init.DiscontinuousConvMode = DISABLE;
-	adc_12b_handle.Init.ScanConvMode = DISABLE;
-	HAL_ADC_Init(&adc_12b_handle);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_7;
-	adc_ch_conf.Offset = 0;
-	adc_ch_conf.Rank = 1;
-	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
-	HAL_ADC_ConfigChannel(&adc_12b_handle, &adc_ch_conf);
-}
-
-
-void a0_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_14;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void a1_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_13;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void a2_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_4;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void a3_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_3;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void a4_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_2;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void a5_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_1;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void d0_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_6;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void d1_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_5;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void d7_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_9;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 }

@@ -7,6 +7,9 @@
 #include "stm32l475e_iot01.h"
 #include "stdio.h"
 
+UART_HandleTypeDef uart_handle;
+
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/

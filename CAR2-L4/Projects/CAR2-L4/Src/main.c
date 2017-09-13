@@ -80,7 +80,7 @@ int main(void)
 	/* Configure the system clock to 80 MHz */
 	SystemClock_Config();
 
-	if (system_init() != OK) {
+	if (systeminit() != OK) {
 		return -1;
 	}
 
