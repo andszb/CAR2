@@ -1,5 +1,8 @@
 #include "control.h"
+
 #define DEBUG_MODE
+
+void terminate_thread();
 
 void control_thread()
 {
@@ -9,7 +12,7 @@ void control_thread()
 		uint32_t measured_distance = read_proximity_data();
 		process_proximity(measured_distance);
 #ifdef DEBUG_MODE
-	printf("distance: %lu\n", measured_distance);
+		printf("distance: %lu\n", measured_distance);
 #endif
 // 		determine line position
 		set_servo_angle(pd_control());
@@ -19,5 +22,11 @@ void control_thread()
 	}
 
 	terminate_thread();
+}
+
+void terminate_thread()
+{
+	while (1)
+		osThreadTerminate(NULL);
 }
 

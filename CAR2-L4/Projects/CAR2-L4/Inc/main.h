@@ -59,8 +59,6 @@
 #define OK	0
 /* Exported functions ------------------------------------------------------- */
 
-void terminate_thread();
-
 #endif /* __MAIN_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

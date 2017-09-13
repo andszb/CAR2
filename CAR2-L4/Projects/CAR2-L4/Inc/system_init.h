@@ -1,9 +1,12 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __SYSTEM_INIT_H
 #define __SYSTEM_INIT_H
+
 #include "stdio.h"
 #include "stm32l4xx_hal.h"
 #include "stm32l475e_iot01.h"
+#include "uart.h"
+#include <string.h>
 
 TIM_HandleTypeDef servo_pwm_handle;
 TIM_HandleTypeDef motor_pwm_handle;

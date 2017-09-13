@@ -1,7 +1,5 @@
 
 #include "system_init.h"
-#include "uart.h"
-#include <string.h>
 
 #define DEBUG_MODE
 

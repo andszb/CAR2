@@ -122,13 +122,6 @@ static void StartThread(void const * argument)
 }
 
 
-void terminate_thread()
-{
-	while (1)
-		osThreadTerminate(NULL);
-}
-
-
 void vMainPreStopProcessing(void)
 {
   /* Ensure that MSI is wake-up system clock */ 
