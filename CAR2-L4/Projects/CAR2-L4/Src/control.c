@@ -2,8 +2,6 @@
 
 #define DEBUG_MODE
 
-void terminate_thread();
-
 void control_thread()
 {
 	while (1) {

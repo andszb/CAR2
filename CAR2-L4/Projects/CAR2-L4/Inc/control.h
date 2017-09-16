@@ -7,6 +7,8 @@
 #include "motor_control.h"
 #include "proximity_driver.h"
 
+void terminate_thread();
+
 void control_thread();
 
 #endif /* __CONTROL_H */

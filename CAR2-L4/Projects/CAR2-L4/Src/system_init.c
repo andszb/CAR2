@@ -7,7 +7,6 @@ GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
 TIM_HandleTypeDef proxim_timer_handle;
-TIM_HandleTypeDef ic_handle;
 TIM_IC_InitTypeDef rpm_ic_init;
 ADC_HandleTypeDef adc_handle;
 ADC_ChannelConfTypeDef adc_ch_conf;

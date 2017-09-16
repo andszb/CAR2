@@ -1,5 +1,15 @@
 #include "motor_control.h"
 
+typedef struct {
+	uint32_t ovf;
+	uint32_t prev;
+	uint32_t last;
+} input_capture_data_t;
+
+input_capture_data_t ic_cntr = {0, 0, 0};
+uint32_t ovf_cntr = 0;
+float prev_rpm_value = 0;
+
 const float m_ctrler_out_min = 0;
 const float m_ctrler_out_max = 100;
 
@@ -42,7 +52,7 @@ void set_direction(int8_t dir)
 
 float pi_control()
 {
-	motor_error = required_rpm - measured_rpm;
+	motor_error = required_rpm - get_rpm();
 	integral += motor_error;
 	m_ctrler_out = motor_p_value * (float)motor_error + i_value * (float)integral;
 	if (m_ctrler_out < m_ctrler_out_min) {
@@ -93,6 +103,58 @@ void decelerate()
 {
 	duty *= 0.8;
 	motor_pwm_set_duty(duty);
+}
+
+
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//	ovf_cntr++;
+//}
+
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	ic_cntr.prev = ic_cntr.last;
+	ic_cntr.last = TIM2 -> CCR1;
+	ic_cntr.ovf = ovf_cntr;
+	ovf_cntr = 0;
+}
+
+
+void TIM5_IRQHandler()
+{
+	HAL_TIM_IRQHandler(&ic_handle);
+}
+
+
+float get_freq()
+{
+	HAL_NVIC_DisableIRQ(TIM5_IRQn);
+	input_capture_data_t snapshot = ic_cntr;
+	HAL_NVIC_EnableIRQ(TIM5_IRQn);
+
+	float steps = (float)snapshot.ovf * ic_handle.Init.Period + snapshot.last - snapshot.prev;
+	float tim5_clk_freq = (float)SystemCoreClock / 2 / (ic_handle.Init.Prescaler + 1); // Because clock division is 1x, so only sysclock matters
+	float tim5_clk_period = 1/ tim5_clk_freq;
+	float signal_period = steps * tim5_clk_period;
+	float signal_freq = 1 / signal_period;
+
+	if (isnan(signal_freq) || isinf(signal_freq))
+		return -1;
+	else
+		return signal_freq;
+}
+
+
+float get_rpm()
+{
+	float rpm = get_freq() * 60 / 7;
+	if (rpm < 0) {
+		return prev_rpm_value;
+	} else {
+		prev_rpm_value = rpm;
+		return rpm;
+	}
 }
 
 
