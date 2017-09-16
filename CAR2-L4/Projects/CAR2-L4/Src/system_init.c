@@ -7,6 +7,8 @@ GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
 TIM_HandleTypeDef proxim_timer_handle;
+TIM_HandleTypeDef ic_handle;
+TIM_IC_InitTypeDef rpm_ic_init;
 ADC_HandleTypeDef adc_handle;
 ADC_ChannelConfTypeDef adc_ch_conf;
 ADC_HandleTypeDef adc_12b_handle;
@@ -23,7 +25,6 @@ int8_t motor_pwm_init();
 int8_t proximity_timer_init();
 static void EXTI3_IRQHandler_Config(void);
 int8_t proximity_exti_init();
-
 
 
 
@@ -91,6 +92,8 @@ int8_t portA_init()
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
+
 	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
@@ -101,9 +104,19 @@ int8_t portA_init()
 	printf("Digital ADC pins init done.\n");
 #endif
 
-	//init D4 (PA3) pin EXTI mode
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
+	//init D4 (PA3) pin as TIM5 IC input
 	GPIO_InitDef.Pin = GPIO_PIN_3;
+	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Alternate = GPIO_AF2_TIM5;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
+
+#ifdef DEBUG_MODE
+	printf("RPM IC pin init done.\n");
+#endif
+
+	//init D13 (PA5) pin EXTI mode
+	GPIO_InitDef.Pin = GPIO_PIN_5;
 	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING_FALLING;
 	GPIO_InitDef.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
@@ -188,11 +201,12 @@ int8_t portC_init()
 {
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
+
 	// Initialize pins A0 - A5 (PC5 - PC0) as ADC input
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
@@ -273,9 +287,10 @@ int8_t motor_pwm_init()
 	return 0;
 }
 
+
 int8_t proximity_timer_init()
 {
-	//init TIM4_CH3 10 kHz x 0,58 = 1 periode / 1 cm
+	//init TIM4_CH3 10 kHz x 0,58 = 1 period / 1 cm
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
 	HAL_NVIC_EnableIRQ(TIM4_IRQn);
@@ -299,6 +314,34 @@ int8_t proximity_timer_init()
 #endif
 	return 0;
 }
+
+
+int8_t rpm_IC_init()
+{
+	__HAL_RCC_TIM5_CLK_ENABLE();
+
+	ic_handle.Instance = TIM5;
+	ic_handle.State = HAL_TIM_STATE_RESET;
+	ic_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_4;
+	ic_handle.Init.RepetitionCounter = 0xFF;
+	ic_handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	ic_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	ic_handle.Init.Period = 0xFFFF;
+	ic_handle.Init.Prescaler = 0;
+	HAL_TIM_IC_Init(&ic_handle);
+
+	rpm_ic_init.ICFilter = 0;
+	rpm_ic_init.ICPolarity = TIM_ICPOLARITY_RISING;
+	rpm_ic_init.ICPrescaler = TIM_ICPSC_DIV1;
+	rpm_ic_init.ICSelection = TIM_ICSELECTION_DIRECTTI;
+	HAL_TIM_IC_ConfigChannel(&ic_handle, &rpm_ic_init, TIM_CHANNEL_4);
+
+	HAL_TIM_Base_Start_IT(&ic_handle);
+	HAL_TIM_IC_Start_IT(&ic_handle, TIM_CHANNEL_4);
+
+	return 0;
+}
+
 
 void adc_init()
 {
@@ -399,12 +442,14 @@ void d7_adc_init()
 	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 }
 
+
 static void EXTI3_IRQHandler_Config(void)
 {
 	/* Enable and set EXTI lines 3 Interrupt to priority 3*/
 	HAL_NVIC_SetPriority(EXTI3_IRQn, 3, 0);
 	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 }
+
 
 int8_t proximity_exti_init()
 {
