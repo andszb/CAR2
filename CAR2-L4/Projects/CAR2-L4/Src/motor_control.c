@@ -23,6 +23,7 @@ float m_ctrler_out = 0.0;
 float duty;
 
 void print_float(float value, int decimal_digits);
+float get_rpm();
 
 
 void print_float(float value, int decimal_digits)
@@ -52,7 +53,7 @@ void set_direction(int8_t dir)
 
 float pi_control()
 {
-	motor_error = required_rpm - get_rpm();
+	motor_error = required_rpm - (uint16_t)get_rpm();
 	integral += motor_error;
 	m_ctrler_out = motor_p_value * (float)motor_error + i_value * (float)integral;
 	if (m_ctrler_out < m_ctrler_out_min) {
@@ -135,7 +136,7 @@ float get_freq()
 
 	float steps = (float)snapshot.ovf * ic_handle.Init.Period + snapshot.last - snapshot.prev;
 	float tim5_clk_freq = (float)SystemCoreClock / 2 / (ic_handle.Init.Prescaler + 1); // Because clock division is 1x, so only sysclock matters
-	float tim5_clk_period = 1/ tim5_clk_freq;
+	float tim5_clk_period = 1 / tim5_clk_freq;
 	float signal_period = steps * tim5_clk_period;
 	float signal_freq = 1 / signal_period;
 
@@ -148,7 +149,7 @@ float get_freq()
 
 float get_rpm()
 {
-	float rpm = get_freq() * 60 / 7;
+	float rpm = get_freq() * 60;
 	if (rpm < 0) {
 		return prev_rpm_value;
 	} else {

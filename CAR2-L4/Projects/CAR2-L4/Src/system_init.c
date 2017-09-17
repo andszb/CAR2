@@ -5,12 +5,12 @@
 
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
-TIM_OC_InitTypeDef proxi_pwm_oc_init;
 TIM_HandleTypeDef proxim_timer_handle;
-TIM_IC_InitTypeDef rpm_ic_init;
 ADC_HandleTypeDef adc_handle;
+//ADC_HandleTypeDef adc_12b_handle;
 ADC_ChannelConfTypeDef adc_ch_conf;
-ADC_HandleTypeDef adc_12b_handle;
+TIM_OC_InitTypeDef proxi_pwm_oc_init;
+TIM_IC_InitTypeDef rpm_ic_init;
 
 int8_t pins_init();
 int8_t timers_init();
@@ -22,8 +22,11 @@ int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
 int8_t proximity_timer_init();
+int8_t rpm_IC_init();
 static void EXTI3_IRQHandler_Config(void);
+static void TIM5_IRQHandler_Config(void);
 int8_t proximity_exti_init();
+int8_t tim5_ic_it_init();
 
 
 
@@ -74,6 +77,7 @@ int8_t timers_init()
 	servo_pwm_init();
 	motor_pwm_init();
 	proximity_timer_init();
+	rpm_IC_init();
 
 	return 0;
 
@@ -82,6 +86,7 @@ int8_t timers_init()
 int8_t interrupts_init()
 {
 	proximity_exti_init();
+	tim5_ic_it_init();
 
 	return 0;
 
@@ -248,9 +253,8 @@ int8_t servo_pwm_init()
 	servo_pwm_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	servo_pwm_handle.Init.Period = 31380;
 	servo_pwm_handle.Init.Prescaler = 50;
-	if (HAL_TIM_PWM_Init(&servo_pwm_handle) != HAL_OK) {
+	if (HAL_TIM_PWM_Init(&servo_pwm_handle) != HAL_OK)
 		return -1;
-	}
 
 	servo_pwm_oc_init.OCFastMode = TIM_OCFAST_DISABLE;
 	servo_pwm_oc_init.OCIdleState = TIM_OCIDLESTATE_RESET;
@@ -272,9 +276,8 @@ int8_t motor_pwm_init()
 	motor_pwm_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	motor_pwm_handle.Init.Period = 16000;
 	motor_pwm_handle.Init.Prescaler = 4;
-	if (HAL_TIM_PWM_Init(&motor_pwm_handle) != HAL_OK) {
+	if (HAL_TIM_PWM_Init(&motor_pwm_handle) != HAL_OK)
 		return -1;
-	}
 
 	motor_pwm_oc_init.OCFastMode = TIM_OCFAST_DISABLE;
 	motor_pwm_oc_init.OCIdleState = TIM_OCIDLESTATE_RESET;
@@ -301,16 +304,15 @@ int8_t proximity_timer_init()
 	proxim_timer_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	proxim_timer_handle.Init.Period = 928;
 	proxim_timer_handle.Init.Prescaler = 4;
-	if (HAL_TIM_Base_Init(&proxim_timer_handle) != HAL_OK) {
+	if (HAL_TIM_Base_Init(&proxim_timer_handle) != HAL_OK)
 		return -1;
-	}
-	if (HAL_TIM_Base_Start_IT(&proxim_timer_handle) != HAL_OK) {
+	if (HAL_TIM_Base_Start_IT(&proxim_timer_handle) != HAL_OK)
 		return -1;
-	}
 
 #ifdef DEBUG_MODE
 	printf("TIM4 init done.\n");
 #endif
+
 	return 0;
 }
 
@@ -335,8 +337,10 @@ int8_t rpm_IC_init()
 	rpm_ic_init.ICSelection = TIM_ICSELECTION_DIRECTTI;
 	HAL_TIM_IC_ConfigChannel(&ic_handle, &rpm_ic_init, TIM_CHANNEL_4);
 
-	HAL_TIM_Base_Start_IT(&ic_handle);
-	HAL_TIM_IC_Start_IT(&ic_handle, TIM_CHANNEL_4);
+	if (HAL_TIM_Base_Start_IT(&ic_handle) != HAL_OK)
+		return -1;
+	if (HAL_TIM_IC_Start_IT(&ic_handle, TIM_CHANNEL_4) != HAL_OK)
+		return -1;
 
 	return 0;
 }
@@ -365,26 +369,26 @@ void adc_init()
 }
 
 
-void adc_12b_init()		// ADC2 channel 7 on pin D10 (PA2)
-{
-	adc_12b_handle.State = HAL_ADC_STATE_RESET;
-	adc_12b_handle.Instance = ADC2;
-	adc_12b_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
-	adc_12b_handle.Init.Resolution = ADC_RESOLUTION_12B;
-	adc_12b_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
-	adc_12b_handle.Init.DMAContinuousRequests = DISABLE;
-	adc_12b_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	adc_12b_handle.Init.ContinuousConvMode = DISABLE;
-	adc_12b_handle.Init.DiscontinuousConvMode = DISABLE;
-	adc_12b_handle.Init.ScanConvMode = DISABLE;
-	HAL_ADC_Init(&adc_12b_handle);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_7;
-	adc_ch_conf.Offset = 0;
-	adc_ch_conf.Rank = 1;
-	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
-	HAL_ADC_ConfigChannel(&adc_12b_handle, &adc_ch_conf);
-}
+//void adc_12b_init()		// ADC2 channel 7 on pin D10 (PA2)
+//{
+//	adc_12b_handle.State = HAL_ADC_STATE_RESET;
+//	adc_12b_handle.Instance = ADC2;
+//	adc_12b_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+//	adc_12b_handle.Init.Resolution = ADC_RESOLUTION_12B;
+//	adc_12b_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+//	adc_12b_handle.Init.DMAContinuousRequests = DISABLE;
+//	adc_12b_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+//	adc_12b_handle.Init.ContinuousConvMode = DISABLE;
+//	adc_12b_handle.Init.DiscontinuousConvMode = DISABLE;
+//	adc_12b_handle.Init.ScanConvMode = DISABLE;
+//	HAL_ADC_Init(&adc_12b_handle);
+//
+//	adc_ch_conf.Channel = ADC_CHANNEL_7;
+//	adc_ch_conf.Offset = 0;
+//	adc_ch_conf.Rank = 1;
+//	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
+//	HAL_ADC_ConfigChannel(&adc_12b_handle, &adc_ch_conf);
+//}
 
 
 void a0_adc_init()
@@ -456,6 +460,24 @@ int8_t proximity_exti_init()
 	EXTI3_IRQHandler_Config();
 #ifdef DEBUG_MODE
 	printf("Proxim sensor init done.\n");
+#endif
+	return 0;
+}
+
+
+static void TIM5_IRQHandler_Config(void)
+{
+	/* Enable and set TIM5 IC interrupt to priority 0*/
+	HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(TIM5_IRQn);
+}
+
+
+int8_t tim5_ic_it_init()
+{
+	TIM5_IRQHandler_Config();
+#ifdef DEBUG_MODE
+	printf("TIM5 IC interrupt init done.\n");
 #endif
 	return 0;
 }

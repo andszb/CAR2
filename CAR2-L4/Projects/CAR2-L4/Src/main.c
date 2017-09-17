@@ -80,9 +80,8 @@ int main(void)
 	/* Configure the system clock to 80 MHz */
 	SystemClock_Config();
 
-	if (system_init() != OK) {
+	if (system_init() != OK)
 		return -1;
-	}
 
 	/* Init thread */
 	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
