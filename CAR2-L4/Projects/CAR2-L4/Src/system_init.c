@@ -25,6 +25,7 @@ int8_t proximity_timer_init();
 int8_t rpm_measure_init();
 static void EXTI3_IRQHandler_Config(void);
 int8_t proximity_exti_init();
+static void TIM5_IRQHandler_Config(void);
 int8_t tim5_ic_it_init();
 
 
@@ -464,10 +465,16 @@ int8_t proximity_exti_init()
 }
 
 
-int8_t tim5_ic_it_init()
+static void TIM5_IRQHandler_Config(void)
 {
 	HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(TIM5_IRQn);
+}
+
+
+int8_t tim5_ic_it_init()
+{
+	TIM5_IRQHandler_Config();
 #ifdef DEBUG_MODE
 	printf("TIM5 IC interrupt init done.\n");
 #endif

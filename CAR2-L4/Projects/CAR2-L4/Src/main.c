@@ -92,7 +92,7 @@ int main(void)
 
 	/* We should never get here as control is now taken by the scheduler */
 	for (;;) {
-		printf("valami:\n");
+		printf("valami\n");
 		printf("RPM: %.0f\n", get_rpm());
 	}
 }
