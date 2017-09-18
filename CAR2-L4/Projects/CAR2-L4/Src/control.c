@@ -22,6 +22,14 @@ void control_thread()
 	terminate_thread();
 }
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM5)
+    	ovf_cntr++;
+    else
+    	cm_cntr++;
+}
+
 void terminate_thread()
 {
 	while (1)

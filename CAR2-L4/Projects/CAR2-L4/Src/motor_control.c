@@ -122,12 +122,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 }
 
 
-void TIM5_IRQHandler()
-{
-	HAL_TIM_IRQHandler(&ic_handle);
-}
-
-
 float get_freq()
 {
 	HAL_NVIC_DisableIRQ(TIM5_IRQn);

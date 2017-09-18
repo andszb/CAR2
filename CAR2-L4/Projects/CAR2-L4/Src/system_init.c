@@ -22,9 +22,8 @@ int8_t portD_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
 int8_t proximity_timer_init();
-int8_t rpm_IC_init();
+int8_t rpm_measure_init();
 static void EXTI3_IRQHandler_Config(void);
-static void TIM5_IRQHandler_Config(void);
 int8_t proximity_exti_init();
 int8_t tim5_ic_it_init();
 
@@ -77,7 +76,7 @@ int8_t timers_init()
 	servo_pwm_init();
 	motor_pwm_init();
 	proximity_timer_init();
-	rpm_IC_init();
+	rpm_measure_init();
 
 	return 0;
 
@@ -110,7 +109,7 @@ int8_t portA_init()
 
 	//init D4 (PA3) pin as TIM5 IC input
 	GPIO_InitDef.Pin = GPIO_PIN_3;
-	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING;	// maybe AF_OD?
 	GPIO_InitDef.Pull = GPIO_NOPULL;
 	GPIO_InitDef.Alternate = GPIO_AF2_TIM5;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
@@ -317,7 +316,7 @@ int8_t proximity_timer_init()
 }
 
 
-int8_t rpm_IC_init()
+int8_t rpm_measure_init()
 {
 	__HAL_RCC_TIM5_CLK_ENABLE();
 
@@ -465,17 +464,10 @@ int8_t proximity_exti_init()
 }
 
 
-static void TIM5_IRQHandler_Config(void)
-{
-	/* Enable and set TIM5 IC interrupt to priority 0*/
-	HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(TIM5_IRQn);
-}
-
-
 int8_t tim5_ic_it_init()
 {
-	TIM5_IRQHandler_Config();
+	HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(TIM5_IRQn);
 #ifdef DEBUG_MODE
 	printf("TIM5 IC interrupt init done.\n");
 #endif
