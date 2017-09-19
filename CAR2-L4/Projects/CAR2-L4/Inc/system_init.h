@@ -15,15 +15,6 @@ TIM_OC_InitTypeDef motor_pwm_oc_init;
 TIM_HandleTypeDef ic_handle;
 
 int8_t system_init();
-void a0_adc_init();
-void a1_adc_init();
-void a2_adc_init();
-void a3_adc_init();
-void a4_adc_init();
-void a5_adc_init();
-void d0_adc_init();
-void d1_adc_init();
-void d7_adc_init();
 
 #endif /* __SYSTEM_INIT_H */
 
