@@ -107,16 +107,11 @@ void decelerate()
 }
 
 
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	ovf_cntr++;
-//}
-
-
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
+	printf("something\n");
 	ic_cntr.prev = ic_cntr.last;
-	ic_cntr.last = TIM2 -> CCR1;
+	ic_cntr.last = TIM5 -> CCR1;
 	ic_cntr.ovf = ovf_cntr;
 	ovf_cntr = 0;
 }
@@ -143,7 +138,7 @@ float get_freq()
 
 float get_rpm()
 {
-	float rpm = get_freq() * 60;
+	float rpm = get_freq() * 60 / 7;
 	if (rpm < 0) {
 		return prev_rpm_value;
 	} else {
