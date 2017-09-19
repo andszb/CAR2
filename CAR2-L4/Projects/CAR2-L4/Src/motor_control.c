@@ -1,4 +1,5 @@
 #include "motor_control.h"
+#include <math.h> //for isnan, isinf
 
 typedef struct {
 	uint32_t ovf;

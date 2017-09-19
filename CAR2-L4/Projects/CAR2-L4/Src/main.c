@@ -61,7 +61,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-static void GPIO_ConfigAN(void);
+
 static void SystemClock_Config(void);
 static void StartThread(void const * argument);
 
@@ -129,7 +129,6 @@ void vMainPreStopProcessing(void)
   /* Ensure that MSI is wake-up system clock */ 
   __HAL_RCC_WAKEUPSTOP_CLK_CONFIG(RCC_STOP_WAKEUPCLOCK_MSI);
   
-  GPIO_ConfigAN();
 }
 
 
@@ -146,47 +145,6 @@ void vMainPostStopProcessing(void)
   SystemCoreClock =  HAL_RCC_GetSysClockFreq() >> AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> 4)];
   
   BSP_LED_Init(LED2);
-}
-
-/**
-  * @brief  Configure all GPIO's to AN to reduce the power consumption
-  * @param  None
-  * @retval None
-  */
-static void GPIO_ConfigAN(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* Configure all GPIO as analog to reduce current consumption on non used IOs */
-  /* Enable GPIOs clock */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOD_CLK_ENABLE();
-    __HAL_RCC_GPIOE_CLK_ENABLE();
-    __HAL_RCC_GPIOF_CLK_ENABLE();
-    __HAL_RCC_GPIOG_CLK_ENABLE();
-    __HAL_RCC_GPIOH_CLK_ENABLE();
-    
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Pin = GPIO_PIN_All;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-    HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
-    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
-    HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
-    
-    /* Disable GPIOs clock */
-
-    __HAL_RCC_GPIOA_CLK_DISABLE();
-    __HAL_RCC_GPIOB_CLK_DISABLE();
-    __HAL_RCC_GPIOD_CLK_DISABLE();
-    __HAL_RCC_GPIOE_CLK_DISABLE();
-    __HAL_RCC_GPIOF_CLK_DISABLE();
-    __HAL_RCC_GPIOG_CLK_DISABLE();
-    __HAL_RCC_GPIOH_CLK_DISABLE();
 }
 
 

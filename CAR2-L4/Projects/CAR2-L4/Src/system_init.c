@@ -7,6 +7,16 @@ GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_HandleTypeDef proxim_timer_handle;
 ADC_HandleTypeDef adc_handle;
+ADC_HandleTypeDef sensor1_handle;
+ADC_HandleTypeDef sensor2_handle;
+ADC_HandleTypeDef sensor3_handle;
+ADC_HandleTypeDef sensor4_handle;
+ADC_HandleTypeDef sensor5_handle;
+ADC_HandleTypeDef sensor6_handle;
+ADC_HandleTypeDef sensor7_handle;
+ADC_HandleTypeDef sensor8_handle;
+ADC_HandleTypeDef sensor9_handle;
+
 //ADC_HandleTypeDef adc_12b_handle;
 ADC_ChannelConfTypeDef adc_ch_conf;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
@@ -19,17 +29,16 @@ int8_t portA_init();
 int8_t portB_init();
 int8_t portC_init();
 int8_t portD_init();
+void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle);
+void adc_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
 int8_t proximity_timer_init();
 int8_t rpm_measure_init();
-void adc_init();
 static void EXTI3_IRQHandler_Config(void);
 int8_t proximity_exti_init();
 static void TIM5_IRQHandler_Config(void);
 int8_t tim5_ic_it_init();
-
-
 
 //call init functions
 int8_t system_init()
@@ -52,13 +61,14 @@ int8_t system_init()
 	//call pin init functions
 	pins_init();
 
-	adc_init();
-
 	//call timers init functions
 	timers_init();
 
 	//call interrups init functions
 	interrupts_init();
+
+	//call line-sensor init function
+	adc_init();
 
 	return 0;
 }
@@ -94,6 +104,7 @@ int8_t interrupts_init()
 	return 0;
 
 }
+
 // init port A pins
 int8_t portA_init()
 {
@@ -108,7 +119,7 @@ int8_t portA_init()
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
-	printf("Digital ADC pins init done.\n");
+	printf("Digital ADC Aport pins init done.\n");
 #endif
 
 	//init D4 (PA3) pin as TIM5 IC input
@@ -159,7 +170,6 @@ int8_t portA_init()
 	return 0;
 }
 
-
 // init port B pins
 int8_t portB_init()
 {
@@ -200,6 +210,20 @@ int8_t portB_init()
 
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 
+	// Initialize D14 and D15 (PB9 and PB8) as sensor group control
+	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
+	GPIO_InitDef.Pin = GPIO_PIN_8 | GPIO_PIN_9;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
+
+#ifdef DEBUG_MODE
+	printf("Sensor groups pin init done.\n");
+#endif
+	//Turn of line sensor leds
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
 	return 0;
 }
 
@@ -217,7 +241,7 @@ int8_t portC_init()
 	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
-	printf("Analog ADC pins init done.\n");
+	printf("Analog ADC Cport pins init done.\n");
 #endif
 
 
@@ -348,11 +372,8 @@ int8_t rpm_measure_init()
 	return 0;
 }
 
-
-void adc_init()
+void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle)
 {
-	__HAL_RCC_ADC_CLK_ENABLE();
-
 	adc_handle.State = HAL_ADC_STATE_RESET;
 	adc_handle.Instance = ADC1;
 	adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
@@ -364,76 +385,73 @@ void adc_init()
 	adc_handle.Init.DiscontinuousConvMode = DISABLE;
 	adc_handle.Init.ScanConvMode = DISABLE;
 	adc_handle.Init.NbrOfConversion = 1;
-	HAL_ADC_Init(&adc_handle);
+}
+
+void adc_init()
+{
+	__HAL_RCC_ADC_CLK_ENABLE();
 
 	adc_ch_conf.Offset = 0;
 	adc_ch_conf.Rank = 1;
 	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
-}
 
-
-void a0_adc_init()
-{
+	//config adc chanels; use sensor nr. names
 	adc_ch_conf.Channel = ADC_CHANNEL_14;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
+	init_sensor_adc_structure(sensor1_handle);
+	HAL_ADC_Init(&sensor1_handle);
+	HAL_ADC_ConfigChannel(&sensor1_handle, &adc_ch_conf);
 
-void a1_adc_init()
-{
 	adc_ch_conf.Channel = ADC_CHANNEL_13;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
+	init_sensor_adc_structure(sensor2_handle);
+	HAL_ADC_Init(&sensor2_handle);
+	HAL_ADC_ConfigChannel(&sensor2_handle, &adc_ch_conf);
 
-void a2_adc_init()
-{
 	adc_ch_conf.Channel = ADC_CHANNEL_4;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
+	init_sensor_adc_structure(sensor3_handle);
+	HAL_ADC_Init(&sensor3_handle);
+	HAL_ADC_ConfigChannel(&sensor3_handle, &adc_ch_conf);
 
-void a3_adc_init()
-{
 	adc_ch_conf.Channel = ADC_CHANNEL_3;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
+	init_sensor_adc_structure(sensor4_handle);
+	HAL_ADC_Init(&sensor4_handle);
+	HAL_ADC_ConfigChannel(&sensor4_handle, &adc_ch_conf);
 
-void a4_adc_init()
-{
 	adc_ch_conf.Channel = ADC_CHANNEL_2;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
+	init_sensor_adc_structure(sensor5_handle);
+	HAL_ADC_Init(&sensor5_handle);
+	HAL_ADC_ConfigChannel(&sensor5_handle, &adc_ch_conf);
 
-void a5_adc_init()
-{
 	adc_ch_conf.Channel = ADC_CHANNEL_1;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
+	init_sensor_adc_structure(sensor6_handle);
+	HAL_ADC_Init(&sensor6_handle);
+	HAL_ADC_ConfigChannel(&sensor6_handle, &adc_ch_conf);
 
-void d0_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_6;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void d1_adc_init()
-{
-	adc_ch_conf.Channel = ADC_CHANNEL_5;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
-}
-
-void d7_adc_init()
-{
 	adc_ch_conf.Channel = ADC_CHANNEL_9;
-	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+	init_sensor_adc_structure(sensor7_handle);
+	HAL_ADC_Init(&sensor7_handle);
+	HAL_ADC_ConfigChannel(&sensor7_handle, &adc_ch_conf);
+
+	adc_ch_conf.Channel = ADC_CHANNEL_6;
+	init_sensor_adc_structure(sensor8_handle);
+	HAL_ADC_Init(&sensor8_handle);
+	HAL_ADC_ConfigChannel(&sensor8_handle, &adc_ch_conf);
+
+	adc_ch_conf.Channel = ADC_CHANNEL_5;
+	init_sensor_adc_structure(sensor9_handle);
+	HAL_ADC_Init(&sensor9_handle);
+	HAL_ADC_ConfigChannel(&sensor9_handle, &adc_ch_conf);
+
+#ifdef DEBUG_MODE
+	printf("Line-sensors init done.\n");
+#endif
+
 }
-
-
 static void EXTI3_IRQHandler_Config(void)
 {
 	/* Enable and set EXTI lines 3 Interrupt to priority 3*/
 	HAL_NVIC_SetPriority(EXTI3_IRQn, 3, 0);
 	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 }
-
 
 int8_t proximity_exti_init()
 {
@@ -445,13 +463,11 @@ int8_t proximity_exti_init()
 	return 0;
 }
 
-
 static void TIM5_IRQHandler_Config(void)
 {
 	HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(TIM5_IRQn);
 }
-
 
 int8_t tim5_ic_it_init()
 {
