@@ -7,15 +7,7 @@ GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_HandleTypeDef proxim_timer_handle;
 ADC_HandleTypeDef adc_handle;
-ADC_HandleTypeDef sensor1_handle;
-ADC_HandleTypeDef sensor2_handle;
-ADC_HandleTypeDef sensor3_handle;
-ADC_HandleTypeDef sensor4_handle;
-ADC_HandleTypeDef sensor5_handle;
-ADC_HandleTypeDef sensor6_handle;
-ADC_HandleTypeDef sensor7_handle;
-ADC_HandleTypeDef sensor8_handle;
-ADC_HandleTypeDef sensor9_handle;
+
 
 //ADC_HandleTypeDef adc_12b_handle;
 ADC_ChannelConfTypeDef adc_ch_conf;
@@ -110,16 +102,15 @@ int8_t portA_init()
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
-
 	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
-	printf("Digital ADC Aport pins init done.\n");
+	printf("Analog ADC Aport pins init done.\n");
 #endif
 
 	//init D4 (PA3) pin as TIM5 IC input
