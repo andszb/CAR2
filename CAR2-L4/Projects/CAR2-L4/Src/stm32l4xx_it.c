@@ -46,6 +46,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef    proxim_timer_handle;
+extern TIM_HandleTypeDef    ic_handle;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -158,6 +159,11 @@ void EXTI3_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   	HAL_TIM_IRQHandler(&proxim_timer_handle);
+}
+
+void TIM5_IRQHandler(void)
+{
+  	HAL_TIM_IRQHandler(&ic_handle);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

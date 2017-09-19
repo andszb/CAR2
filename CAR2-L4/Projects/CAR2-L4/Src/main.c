@@ -80,19 +80,21 @@ int main(void)
 	/* Configure the system clock to 80 MHz */
 	SystemClock_Config();
 
-	if (system_init() != OK) {
+	if (system_init() != OK)
 		return -1;
-	}
 
 	/* Init thread */
-	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
-	osThreadCreate (osThread(Start), NULL);
+//	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
+//	osThreadCreate (osThread(Start), NULL);
 
 	/* Start scheduler */
-	osKernelStart();
+//	osKernelStart();
 
 	/* We should never get here as control is now taken by the scheduler */
-	for (;;);
+	for (;;) {
+		printf("valami\n");
+		printf("RPM: %.0f\n", get_rpm());
+	}
 }
 
 
@@ -119,13 +121,6 @@ static void StartThread(void const * argument)
 //	volatile osThreadId w = osThreadCreate(osThread(wifi_comm), NULL);
 
 	terminate_thread();
-}
-
-
-void terminate_thread()
-{
-	while (1)
-		osThreadTerminate(NULL);
 }
 
 
