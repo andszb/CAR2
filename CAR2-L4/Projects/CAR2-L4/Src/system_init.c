@@ -21,7 +21,7 @@ int8_t portA_init();
 int8_t portB_init();
 int8_t portC_init();
 int8_t portD_init();
-void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle);
+void init_sensor_adc_structure(ADC_HandleTypeDef* adc_handle);
 void adc_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
@@ -64,7 +64,6 @@ int8_t system_init()
 
 	return 0;
 }
-
 
 //call port init functions
 int8_t pins_init()
@@ -362,19 +361,19 @@ int8_t rpm_measure_init()
 	return 0;
 }
 
-void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle)
+void init_sensor_adc_structure(ADC_HandleTypeDef* adc_handle)
 {
-	adc_handle.State = HAL_ADC_STATE_RESET;
-	adc_handle.Instance = ADC1;
-	adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
-	adc_handle.Init.Resolution = ADC_RESOLUTION_8B;
-	adc_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
-	adc_handle.Init.DMAContinuousRequests = DISABLE;
-	adc_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	adc_handle.Init.ContinuousConvMode = DISABLE;
-	adc_handle.Init.DiscontinuousConvMode = DISABLE;
-	adc_handle.Init.ScanConvMode = DISABLE;
-	adc_handle.Init.NbrOfConversion = 1;
+	adc_handle->State = HAL_ADC_STATE_RESET;
+	adc_handle->Instance = ADC1;
+	adc_handle->Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
+	adc_handle->Init.Resolution = ADC_RESOLUTION_8B;
+	adc_handle->Init.EOCSelection = ADC_EOC_SEQ_CONV;
+	adc_handle->Init.DMAContinuousRequests = DISABLE;
+	adc_handle->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	adc_handle->Init.ContinuousConvMode = DISABLE;
+	adc_handle->Init.DiscontinuousConvMode = DISABLE;
+	adc_handle->Init.ScanConvMode = DISABLE;
+	adc_handle->Init.NbrOfConversion = 1;
 }
 
 void adc_init()
@@ -387,47 +386,47 @@ void adc_init()
 
 	//config adc chanels; use sensor nr. names
 	adc_ch_conf.Channel = ADC_CHANNEL_14;
-	init_sensor_adc_structure(sensor1_handle);
+	init_sensor_adc_structure(&sensor1_handle);
 	HAL_ADC_Init(&sensor1_handle);
 	HAL_ADC_ConfigChannel(&sensor1_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_13;
-	init_sensor_adc_structure(sensor2_handle);
+	init_sensor_adc_structure(&sensor2_handle);
 	HAL_ADC_Init(&sensor2_handle);
 	HAL_ADC_ConfigChannel(&sensor2_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_4;
-	init_sensor_adc_structure(sensor3_handle);
+	init_sensor_adc_structure(&sensor3_handle);
 	HAL_ADC_Init(&sensor3_handle);
 	HAL_ADC_ConfigChannel(&sensor3_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_3;
-	init_sensor_adc_structure(sensor4_handle);
+	init_sensor_adc_structure(&sensor4_handle);
 	HAL_ADC_Init(&sensor4_handle);
 	HAL_ADC_ConfigChannel(&sensor4_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_2;
-	init_sensor_adc_structure(sensor5_handle);
+	init_sensor_adc_structure(&sensor5_handle);
 	HAL_ADC_Init(&sensor5_handle);
 	HAL_ADC_ConfigChannel(&sensor5_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_1;
-	init_sensor_adc_structure(sensor6_handle);
+	init_sensor_adc_structure(&sensor6_handle);
 	HAL_ADC_Init(&sensor6_handle);
 	HAL_ADC_ConfigChannel(&sensor6_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_9;
-	init_sensor_adc_structure(sensor7_handle);
+	init_sensor_adc_structure(&sensor7_handle);
 	HAL_ADC_Init(&sensor7_handle);
 	HAL_ADC_ConfigChannel(&sensor7_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_6;
-	init_sensor_adc_structure(sensor8_handle);
+	init_sensor_adc_structure(&sensor8_handle);
 	HAL_ADC_Init(&sensor8_handle);
 	HAL_ADC_ConfigChannel(&sensor8_handle, &adc_ch_conf);
 
 	adc_ch_conf.Channel = ADC_CHANNEL_5;
-	init_sensor_adc_structure(sensor9_handle);
+	init_sensor_adc_structure(&sensor9_handle);
 	HAL_ADC_Init(&sensor9_handle);
 	HAL_ADC_ConfigChannel(&sensor9_handle, &adc_ch_conf);
 
