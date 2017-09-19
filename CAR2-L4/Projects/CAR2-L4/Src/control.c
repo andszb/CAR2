@@ -2,10 +2,20 @@
 
 #define DEBUG_MODE
 
+uint8_t button_pressed = 0;
+
 void control_thread()
 {
 	while (1) {
-
+		if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) {
+			if (!button_pressed) {
+				required_rpm = 150;
+				button_pressed = 1;
+			} else {
+				required_rpm = 0;
+				button_pressed = 0;
+			}
+		}
 //		check for any object
 		uint32_t measured_distance = read_proximity_data();
 		process_proximity(measured_distance);
