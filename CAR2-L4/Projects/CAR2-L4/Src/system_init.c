@@ -6,11 +6,10 @@
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_HandleTypeDef proxim_timer_handle;
-ADC_HandleTypeDef adc_handle;
 
 
 //ADC_HandleTypeDef adc_12b_handle;
-ADC_ChannelConfTypeDef adc_ch_conf;
+
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
 TIM_IC_InitTypeDef rpm_ic_init;
 
@@ -109,7 +108,7 @@ int8_t portA_init()
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
-	printf("Analog ADC Aport pins init done.\n");
+	printf("Analog ADC A-port pins init done.\n");
 #endif
 
 	//init D4 (PA3) pin as TIM5 IC input
@@ -361,74 +360,28 @@ int8_t rpm_measure_init()
 	return 0;
 }
 
-void init_sensor_adc_structure(ADC_HandleTypeDef* adc_handle)
-{
-	adc_handle->State = HAL_ADC_STATE_RESET;
-	adc_handle->Instance = ADC1;
-	adc_handle->Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
-	adc_handle->Init.Resolution = ADC_RESOLUTION_8B;
-	adc_handle->Init.EOCSelection = ADC_EOC_SEQ_CONV;
-	adc_handle->Init.DMAContinuousRequests = DISABLE;
-	adc_handle->Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	adc_handle->Init.ContinuousConvMode = DISABLE;
-	adc_handle->Init.DiscontinuousConvMode = DISABLE;
-	adc_handle->Init.ScanConvMode = DISABLE;
-	adc_handle->Init.NbrOfConversion = 1;
-}
-
 void adc_init()
 {
 	__HAL_RCC_ADC_CLK_ENABLE();
+	adc_handle.State = HAL_ADC_STATE_RESET;
+	adc_handle.Instance = ADC1;
+	adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
+	adc_handle.Init.Resolution = ADC_RESOLUTION_12B;
+	adc_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+	adc_handle.Init.DMAContinuousRequests = DISABLE;
+	adc_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	adc_handle.Init.ContinuousConvMode = DISABLE;
+	adc_handle.Init.DiscontinuousConvMode = DISABLE;
+	adc_handle.Init.ScanConvMode = DISABLE;
+	adc_handle.Init.NbrOfConversion = 1;
+	HAL_ADC_Init(&adc_handle);
 
 	adc_ch_conf.Offset = 0;
 	adc_ch_conf.Rank = 1;
 	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
 
-	//config adc chanels; use sensor nr. names
-	adc_ch_conf.Channel = ADC_CHANNEL_14;
-	init_sensor_adc_structure(&sensor1_handle);
-	HAL_ADC_Init(&sensor1_handle);
-	HAL_ADC_ConfigChannel(&sensor1_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_13;
-	init_sensor_adc_structure(&sensor2_handle);
-	HAL_ADC_Init(&sensor2_handle);
-	HAL_ADC_ConfigChannel(&sensor2_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_4;
-	init_sensor_adc_structure(&sensor3_handle);
-	HAL_ADC_Init(&sensor3_handle);
-	HAL_ADC_ConfigChannel(&sensor3_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_3;
-	init_sensor_adc_structure(&sensor4_handle);
-	HAL_ADC_Init(&sensor4_handle);
-	HAL_ADC_ConfigChannel(&sensor4_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_2;
-	init_sensor_adc_structure(&sensor5_handle);
-	HAL_ADC_Init(&sensor5_handle);
-	HAL_ADC_ConfigChannel(&sensor5_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_1;
-	init_sensor_adc_structure(&sensor6_handle);
-	HAL_ADC_Init(&sensor6_handle);
-	HAL_ADC_ConfigChannel(&sensor6_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_9;
-	init_sensor_adc_structure(&sensor7_handle);
-	HAL_ADC_Init(&sensor7_handle);
-	HAL_ADC_ConfigChannel(&sensor7_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_6;
-	init_sensor_adc_structure(&sensor8_handle);
-	HAL_ADC_Init(&sensor8_handle);
-	HAL_ADC_ConfigChannel(&sensor8_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_5;
-	init_sensor_adc_structure(&sensor9_handle);
-	HAL_ADC_Init(&sensor9_handle);
-	HAL_ADC_ConfigChannel(&sensor9_handle, &adc_ch_conf);
+	HAL_ADC_Init(&adc_handle);
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 
 #ifdef DEBUG_MODE
 	printf("Line-sensors init done.\n");

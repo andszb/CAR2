@@ -14,15 +14,8 @@ TIM_OC_InitTypeDef servo_pwm_oc_init;
 TIM_OC_InitTypeDef motor_pwm_oc_init;
 TIM_HandleTypeDef ic_handle;
 
-ADC_HandleTypeDef sensor1_handle;
-ADC_HandleTypeDef sensor2_handle;
-ADC_HandleTypeDef sensor3_handle;
-ADC_HandleTypeDef sensor4_handle;
-ADC_HandleTypeDef sensor5_handle;
-ADC_HandleTypeDef sensor6_handle;
-ADC_HandleTypeDef sensor7_handle;
-ADC_HandleTypeDef sensor8_handle;
-ADC_HandleTypeDef sensor9_handle;
+ADC_ChannelConfTypeDef adc_ch_conf;
+ADC_HandleTypeDef adc_handle;
 
 int8_t system_init();
 
