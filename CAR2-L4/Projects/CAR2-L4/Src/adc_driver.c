@@ -1,30 +1,20 @@
 #include "adc_driver.h"
 #include "system_init.h"
+#include <math.h>
 
-#define SENSOR1_CH	ADC_CHANNEL_14
-#define SENSOR2_CH	ADC_CHANNEL_13
-#define SENSOR3_CH	ADC_CHANNEL_4
-#define SENSOR4_CH	ADC_CHANNEL_3
-#define SENSOR5_CH	ADC_CHANNEL_2
-#define SENSOR6_CH	ADC_CHANNEL_1
-#define SENSOR7_CH	ADC_CHANNEL_9
-#define SENSOR8_CH	ADC_CHANNEL_6
-#define SENSOR9_CH	ADC_CHANNEL_5
-
-
+//define ADC channels connected to pins used to read sensors data
+#define SENSOR1_CH	ADC_CHANNEL_14		//A0 L4 pin - PC5 STM32 pin
+#define SENSOR2_CH	ADC_CHANNEL_13		//A1 L4 pin - PC4 STM32 pin
+#define SENSOR3_CH	ADC_CHANNEL_4		//A2 L4 pin - PC3 STM32 pin
+#define SENSOR4_CH	ADC_CHANNEL_3		//A3 L4 pin - PC2 STM32 pin
+#define SENSOR5_CH	ADC_CHANNEL_2		//A4 L4 pin - PC1 STM32 pin
+#define SENSOR6_CH	ADC_CHANNEL_1		//A5 L4 pin - PC0 STM32 pin
+#define SENSOR7_CH	ADC_CHANNEL_9		//D7 L4 pin - PA4 STM32 pin
+#define SENSOR8_CH	ADC_CHANNEL_6		//D0 L4 pin - PA1 STM32 pin
+#define SENSOR9_CH	ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
 #define DEBUG_MODE
-
-/*extern ADC_HandleTypeDef sensor1_handle;
-extern ADC_HandleTypeDef sensor2_handle;
-extern ADC_HandleTypeDef sensor3_handle;
-extern ADC_HandleTypeDef sensor4_handle;
-extern ADC_HandleTypeDef sensor5_handle;
-extern ADC_HandleTypeDef sensor6_handle;
-extern ADC_HandleTypeDef sensor7_handle;
-extern ADC_HandleTypeDef sensor8_handle;
-extern ADC_HandleTypeDef sensor9_handle;*/
-typedef struct
-{
+//define sensor data structure
+typedef struct {
 	uint16_t sensor1_data;
 	uint16_t sensor2_data;
 	uint16_t sensor3_data;
@@ -36,8 +26,6 @@ typedef struct
 	uint16_t sensor9_data;
 } sensor_data_t;
 
-sensor_data_t sensor_data;
-
 void select_adc_channel(uint32_t sensor_nr);
 uint16_t get_sensor1_value();
 uint16_t get_sensor2_value();
@@ -48,12 +36,13 @@ uint16_t get_sensor6_value();
 uint16_t get_sensor7_value();
 uint16_t get_sensor8_value();
 uint16_t get_sensor9_value();
+sensor_data_t get_sensor_data();
 
-
-
+//read data from line sensor in 2 separate groups
 sensor_data_t get_sensor_data()
 {
-	sensor_data_t get_sensor_data();
+	sensor_data_t sensor_data;
+
 	//turn on sensor group 1
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
@@ -86,6 +75,7 @@ sensor_data_t get_sensor_data()
 	return sensor_data;
 }
 
+//read adc data of optosensors
 uint16_t get_sensor1_value()
 {
 	select_adc_channel(SENSOR1_CH);
@@ -158,8 +148,25 @@ uint16_t get_sensor9_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
+//select opto sensor before reading adc data
 void select_adc_channel(uint32_t sensor_nr)
 {
 	adc_ch_conf.Channel = sensor_nr;
 	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
+}
+
+void process_sensor_data(sensor_data_t sensor_data)
+{
+	sensor_data_t detected_color;
+	detected_color.sensor1_data = sensor_data.sensor1_data - sensor1_config.sensor_mid_value;
+	detected_color.sensor2_data = sensor_data.sensor2_data - sensor2_config.sensor_mid_value;
+	detected_color.sensor3_data = sensor_data.sensor3_data - sensor3_config.sensor_mid_value;
+	detected_color.sensor4_data = sensor_data.sensor4_data - sensor4_config.sensor_mid_value;
+	detected_color.sensor5_data = sensor_data.sensor5_data - sensor5_config.sensor_mid_value;
+	detected_color.sensor6_data = sensor_data.sensor6_data - sensor6_config.sensor_mid_value;
+	detected_color.sensor7_data = sensor_data.sensor7_data - sensor7_config.sensor_mid_value;
+	detected_color.sensor8_data = sensor_data.sensor8_data - sensor8_config.sensor_mid_value;
+	detected_color.sensor9_data = sensor_data.sensor9_data - sensor9_config.sensor_mid_value;
+
+
 }

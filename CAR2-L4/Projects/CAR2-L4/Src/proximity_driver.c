@@ -49,19 +49,22 @@ void proximity2_send_trigger()
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (proxim_flag == 0) {
-		HAL_NVIC_DisableIRQ(TIM4_IRQn);
-		proxim_flag = 1;
+	if (GPIO_Pin == GPIO_PIN_5) {
+		if (proxim_flag == 0) {
+			HAL_NVIC_DisableIRQ(TIM4_IRQn);
+			proxim_flag = 1;
 #ifdef DEBUG_MODE
-		printf("up   ");
+				printf("up   ");
 #endif
-	} else if (proxim_flag == 1) {
-		HAL_NVIC_EnableIRQ(TIM4_IRQn);
-		proxim_flag = 0;
+		} else if (proxim_flag == 1) {
+			HAL_NVIC_EnableIRQ(TIM4_IRQn);
+			proxim_flag = 0;
 #ifdef DEBUG_MODE
-		printf("down\n");
+				printf("down\n");
 #endif
+		}
 	}
+
 }
 
 uint32_t read_proximity_data()
