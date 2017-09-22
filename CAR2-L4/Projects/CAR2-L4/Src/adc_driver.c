@@ -13,6 +13,7 @@
 #define SENSOR8_CH	ADC_CHANNEL_6		//D0 L4 pin - PA1 STM32 pin
 #define SENSOR9_CH	ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
 #define DEBUG_MODE
+
 //define sensor data structure
 typedef struct {
 	uint16_t sensor1_data;
@@ -167,6 +168,4 @@ void process_sensor_data(sensor_data_t sensor_data)
 	detected_color.sensor7_data = sensor_data.sensor7_data - sensor7_config.sensor_mid_value;
 	detected_color.sensor8_data = sensor_data.sensor8_data - sensor8_config.sensor_mid_value;
 	detected_color.sensor9_data = sensor_data.sensor9_data - sensor9_config.sensor_mid_value;
-
-
 }

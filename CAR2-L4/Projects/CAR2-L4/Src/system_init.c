@@ -27,6 +27,7 @@ static void TIM5_IRQHandler_Config(void);
 int8_t tim5_ic_it_init();
 void config_sensors();
 
+
 //call init functions
 int8_t system_init()
 {
@@ -58,6 +59,7 @@ int8_t system_init()
 	return 0;
 }
 
+
 //call port init functions
 int8_t pins_init()
 {
@@ -77,7 +79,6 @@ int8_t timers_init()
 	rpm_measure_init();
 
 	return 0;
-
 }
 
 int8_t interrupts_init()
@@ -86,8 +87,8 @@ int8_t interrupts_init()
 	tim5_ic_it_init();
 
 	return 0;
-
 }
+
 
 // init port A pins
 int8_t portA_init()
@@ -153,6 +154,7 @@ int8_t portA_init()
 	return 0;
 }
 
+
 // init port B pins
 int8_t portB_init()
 {
@@ -207,6 +209,7 @@ int8_t portB_init()
 
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+
 	return 0;
 }
 
@@ -226,7 +229,6 @@ int8_t portC_init()
 #ifdef DEBUG_MODE
 	printf("Analog ADC Cport pins init done.\n");
 #endif
-
 
 	return 0;
 }
@@ -355,6 +357,7 @@ int8_t rpm_measure_init()
 	return 0;
 }
 
+
 void adc_init()
 {
 	__HAL_RCC_ADC_CLK_ENABLE();
@@ -381,14 +384,16 @@ void adc_init()
 #ifdef DEBUG_MODE
 	printf("Line-sensors init done.\n");
 #endif
-
 }
+
+
 static void EXTI9_5_IRQHandler_Config(void)
 {
 	/* Enable and set EXTI lines 3 Interrupt to priority 3*/
 	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 3, 0);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
+
 
 int8_t proximity_exti_init()
 {
@@ -397,8 +402,10 @@ int8_t proximity_exti_init()
 #ifdef DEBUG_MODE
 	printf("Proxim sensor init done.\n");
 #endif
+
 	return 0;
 }
+
 
 static void TIM5_IRQHandler_Config(void)
 {
@@ -406,14 +413,17 @@ static void TIM5_IRQHandler_Config(void)
 	HAL_NVIC_EnableIRQ(TIM5_IRQn);
 }
 
+
 int8_t tim5_ic_it_init()
 {
 	TIM5_IRQHandler_Config();
 #ifdef DEBUG_MODE
 	printf("TIM5 IC interrupt init done.\n");
 #endif
+
 	return 0;
 }
+
 
 void config_sensors()
 {
