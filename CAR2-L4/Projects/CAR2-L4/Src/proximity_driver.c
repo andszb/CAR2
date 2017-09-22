@@ -19,15 +19,15 @@ void proximity2_send_trigger();
 void proximity1_send_trigger()
 {
 	/* @todo: for test on auto use D3 (PB0) */
-	//init trigger pin to D3 (PB0)
-	/*HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+	//send trigger pin to D3 (PB0)
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 	osDelay(1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);*/
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 
-	/* @todo: for test on test panel use D3 (PB0) */
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+	/* @todo: for test on test panel use D2 (PD14) */
+	/*HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
 	osDelay(1);
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);*/
 
 #ifdef DEBUG_MODE
 	printf("Proxim trigger sent.\n");
@@ -37,7 +37,7 @@ void proximity1_send_trigger()
 
 void proximity2_send_trigger()
 {
-	//init trigger pin to D2 (PD14)
+	//send trigger pin to D2 (PD14)
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
 	osDelay(1);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
@@ -64,14 +64,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 #endif
 		}
 	}
-
 }
 
 uint32_t read_proximity_data()
 {
 	uint8_t measure_failed = 0;
 	uint32_t sum = 0;
-	uint8_t error_filter = 1;
+	uint8_t error_filter = 5;
 
 	for (int i = 0; i < error_filter; i++){
 
@@ -84,7 +83,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 1.\n");
 #endif
-			osDelay(1);
+			osDelay(3);
 		}
 		proxim1_cntr = cm_cntr;
 #ifdef DEBUG_MODE
@@ -99,7 +98,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 2.\n");
 #endif
-			osDelay(1);
+			osDelay(3);
 		}
 		proxim2_cntr = cm_cntr;
 #ifdef DEBUG_MODE
@@ -116,6 +115,7 @@ uint32_t read_proximity_data()
 	}
 
 	distance = sum / (2 * (error_filter - measure_failed));
+
 #ifdef DEBUG_MODE
 	printf("distance: %lu, failure: %d\n\n", distance, measure_failed);
 #endif

@@ -10,13 +10,15 @@ void control_thread()
 		uint32_t measured_distance = read_proximity_data();
 		process_proximity(measured_distance);
 #ifdef DEBUG_MODE
-		printf("distance: %lu\n", measured_distance);
+		printf("\ndistance: %lu\n", measured_distance);
 #endif
 // 		determine line position
+		get_line_sensor_data();
+
 		set_servo_angle(pd_control());
 //		determine required rpm
 		motor_pwm_set_duty(pi_control());
-		osDelay(10);
+		osDelay(1000);
 	}
 
 	terminate_thread();
