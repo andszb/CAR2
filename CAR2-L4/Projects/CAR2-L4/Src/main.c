@@ -92,8 +92,8 @@ int main(void)
 
 	/* We should never get here as control is now taken by the scheduler */
 	for (;;) {
-		printf("RPM: %.0f\n", get_rpm());
-		HAL_Delay(300);
+		get_sensor_data();
+		HAL_Delay(1000);
 	}
 }
 

@@ -1,4 +1,3 @@
-
 #include "system_init.h"
 
 #define DEBUG_MODE
@@ -6,19 +5,7 @@
 GPIO_InitTypeDef GPIO_InitDef;
 TIM_HandleTypeDef proxi_pwm_handle;
 TIM_HandleTypeDef proxim_timer_handle;
-ADC_HandleTypeDef adc_handle;
-ADC_HandleTypeDef sensor1_handle;
-ADC_HandleTypeDef sensor2_handle;
-ADC_HandleTypeDef sensor3_handle;
-ADC_HandleTypeDef sensor4_handle;
-ADC_HandleTypeDef sensor5_handle;
-ADC_HandleTypeDef sensor6_handle;
-ADC_HandleTypeDef sensor7_handle;
-ADC_HandleTypeDef sensor8_handle;
-ADC_HandleTypeDef sensor9_handle;
-
 //ADC_HandleTypeDef adc_12b_handle;
-ADC_ChannelConfTypeDef adc_ch_conf;
 TIM_OC_InitTypeDef proxi_pwm_oc_init;
 TIM_IC_InitTypeDef rpm_ic_init;
 
@@ -29,24 +16,22 @@ int8_t portA_init();
 int8_t portB_init();
 int8_t portC_init();
 int8_t portD_init();
-void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle);
 void adc_init();
 int8_t servo_pwm_init();
 int8_t motor_pwm_init();
 int8_t proximity_timer_init();
 int8_t rpm_measure_init();
-static void EXTI3_IRQHandler_Config(void);
+static void EXTI9_5_IRQHandler_Config(void);
 int8_t proximity_exti_init();
 static void TIM5_IRQHandler_Config(void);
 int8_t tim5_ic_it_init();
+void config_sensors();
 
 //call init functions
 int8_t system_init()
 {
 	BSP_LED_Init(LED2);
-
 	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
-
 	uart_init();
 
 	/* Output without printf, using HAL function*/
@@ -72,7 +57,6 @@ int8_t system_init()
 
 	return 0;
 }
-
 
 //call port init functions
 int8_t pins_init()
@@ -110,16 +94,15 @@ int8_t portA_init()
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
-	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
-
 	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
+	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
-	printf("Digital ADC Aport pins init done.\n");
+	printf("Analog ADC A-port pins init done.\n");
 #endif
 
 	//init D4 (PA3) pin as TIM5 IC input
@@ -212,7 +195,7 @@ int8_t portB_init()
 
 	// Initialize D14 and D15 (PB9 and PB8) as sensor group control
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
 	GPIO_InitDef.Pin = GPIO_PIN_8 | GPIO_PIN_9;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
@@ -237,7 +220,7 @@ int8_t portC_init()
 	// Initialize pins A0 - A5 (PC5 - PC0) as ADC input
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
-	GPIO_InitDef.Pull = GPIO_NOPULL;
+	GPIO_InitDef.Pull = GPIO_PULLDOWN;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitDef);
 
 #ifdef DEBUG_MODE
@@ -372,12 +355,13 @@ int8_t rpm_measure_init()
 	return 0;
 }
 
-void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle)
+void adc_init()
 {
+	__HAL_RCC_ADC_CLK_ENABLE();
 	adc_handle.State = HAL_ADC_STATE_RESET;
 	adc_handle.Instance = ADC1;
 	adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2; //
-	adc_handle.Init.Resolution = ADC_RESOLUTION_8B;
+	adc_handle.Init.Resolution = ADC_RESOLUTION_12B;
 	adc_handle.Init.EOCSelection = ADC_EOC_SEQ_CONV;
 	adc_handle.Init.DMAContinuousRequests = DISABLE;
 	adc_handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
@@ -385,78 +369,31 @@ void init_sensor_adc_structure(ADC_HandleTypeDef adc_handle)
 	adc_handle.Init.DiscontinuousConvMode = DISABLE;
 	adc_handle.Init.ScanConvMode = DISABLE;
 	adc_handle.Init.NbrOfConversion = 1;
-}
-
-void adc_init()
-{
-	__HAL_RCC_ADC_CLK_ENABLE();
+	HAL_ADC_Init(&adc_handle);
 
 	adc_ch_conf.Offset = 0;
 	adc_ch_conf.Rank = 1;
 	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
 
-	//config adc chanels; use sensor nr. names
-	adc_ch_conf.Channel = ADC_CHANNEL_14;
-	init_sensor_adc_structure(sensor1_handle);
-	HAL_ADC_Init(&sensor1_handle);
-	HAL_ADC_ConfigChannel(&sensor1_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_13;
-	init_sensor_adc_structure(sensor2_handle);
-	HAL_ADC_Init(&sensor2_handle);
-	HAL_ADC_ConfigChannel(&sensor2_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_4;
-	init_sensor_adc_structure(sensor3_handle);
-	HAL_ADC_Init(&sensor3_handle);
-	HAL_ADC_ConfigChannel(&sensor3_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_3;
-	init_sensor_adc_structure(sensor4_handle);
-	HAL_ADC_Init(&sensor4_handle);
-	HAL_ADC_ConfigChannel(&sensor4_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_2;
-	init_sensor_adc_structure(sensor5_handle);
-	HAL_ADC_Init(&sensor5_handle);
-	HAL_ADC_ConfigChannel(&sensor5_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_1;
-	init_sensor_adc_structure(sensor6_handle);
-	HAL_ADC_Init(&sensor6_handle);
-	HAL_ADC_ConfigChannel(&sensor6_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_9;
-	init_sensor_adc_structure(sensor7_handle);
-	HAL_ADC_Init(&sensor7_handle);
-	HAL_ADC_ConfigChannel(&sensor7_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_6;
-	init_sensor_adc_structure(sensor8_handle);
-	HAL_ADC_Init(&sensor8_handle);
-	HAL_ADC_ConfigChannel(&sensor8_handle, &adc_ch_conf);
-
-	adc_ch_conf.Channel = ADC_CHANNEL_5;
-	init_sensor_adc_structure(sensor9_handle);
-	HAL_ADC_Init(&sensor9_handle);
-	HAL_ADC_ConfigChannel(&sensor9_handle, &adc_ch_conf);
+	HAL_ADC_Init(&adc_handle);
+	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 
 #ifdef DEBUG_MODE
 	printf("Line-sensors init done.\n");
 #endif
 
 }
-static void EXTI3_IRQHandler_Config(void)
+static void EXTI9_5_IRQHandler_Config(void)
 {
 	/* Enable and set EXTI lines 3 Interrupt to priority 3*/
-	HAL_NVIC_SetPriority(EXTI3_IRQn, 3, 0);
-	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 3, 0);
+	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
 int8_t proximity_exti_init()
 {
 	//init D4 (PA3) EXTI mode
-	EXTI3_IRQHandler_Config();
+	EXTI9_5_IRQHandler_Config();
 #ifdef DEBUG_MODE
 	printf("Proxim sensor init done.\n");
 #endif
@@ -478,5 +415,34 @@ int8_t tim5_ic_it_init()
 	return 0;
 }
 
-
+void config_sensors()
+{
+	sensor1_config.sensor_max_value = 4095;
+	sensor1_config.sensor_min_value = 0;
+	sensor1_config.sensor_mid_value = (sensor1_config.sensor_max_value + sensor1_config.sensor_min_value)/2;
+	sensor2_config.sensor_max_value = 4095;
+	sensor2_config.sensor_min_value = 0;
+	sensor2_config.sensor_mid_value = (sensor2_config.sensor_max_value + sensor2_config.sensor_min_value)/2;
+	sensor3_config.sensor_max_value = 4095;
+	sensor3_config.sensor_min_value = 0;
+	sensor3_config.sensor_mid_value = (sensor3_config.sensor_max_value + sensor3_config.sensor_min_value)/2;
+	sensor4_config.sensor_max_value = 4095;
+	sensor4_config.sensor_min_value = 0;
+	sensor4_config.sensor_mid_value = (sensor4_config.sensor_max_value + sensor4_config.sensor_min_value)/2;
+	sensor5_config.sensor_max_value = 4095;
+	sensor5_config.sensor_min_value = 0;
+	sensor5_config.sensor_mid_value = (sensor5_config.sensor_max_value + sensor5_config.sensor_min_value)/2;
+	sensor6_config.sensor_max_value = 4095;
+	sensor6_config.sensor_min_value = 0;
+	sensor6_config.sensor_mid_value = (sensor6_config.sensor_max_value + sensor6_config.sensor_min_value)/2;
+	sensor7_config.sensor_max_value = 4095;
+	sensor7_config.sensor_min_value = 0;
+	sensor7_config.sensor_mid_value = (sensor7_config.sensor_max_value + sensor7_config.sensor_min_value)/2;
+	sensor8_config.sensor_max_value = 4095;
+	sensor8_config.sensor_min_value = 0;
+	sensor8_config.sensor_mid_value = (sensor8_config.sensor_max_value + sensor8_config.sensor_min_value)/2;
+	sensor9_config.sensor_max_value = 4095;
+	sensor9_config.sensor_min_value = 0;
+	sensor9_config.sensor_mid_value = (sensor9_config.sensor_max_value + sensor9_config.sensor_min_value)/2;
+}
 
