@@ -16,31 +16,32 @@
 
 //define sensor data structure
 typedef struct {
-	uint16_t sensor1_data;
-	uint16_t sensor2_data;
-	uint16_t sensor3_data;
-	uint16_t sensor4_data;
-	uint16_t sensor5_data;
-	uint16_t sensor6_data;
-	uint16_t sensor7_data;
-	uint16_t sensor8_data;
-	uint16_t sensor9_data;
+	int16_t sensor1_data;
+	int16_t sensor2_data;
+	int16_t sensor3_data;
+	int16_t sensor4_data;
+	int16_t sensor5_data;
+	int16_t sensor6_data;
+	int16_t sensor7_data;
+	int16_t sensor8_data;
+	int16_t sensor9_data;
 } sensor_data_t;
 
 void select_adc_channel(uint32_t sensor_nr);
-uint16_t get_sensor1_value();
-uint16_t get_sensor2_value();
-uint16_t get_sensor3_value();
-uint16_t get_sensor4_value();
-uint16_t get_sensor5_value();
-uint16_t get_sensor6_value();
-uint16_t get_sensor7_value();
-uint16_t get_sensor8_value();
-uint16_t get_sensor9_value();
-sensor_data_t get_sensor_data();
+int16_t get_sensor1_value();
+int16_t get_sensor2_value();
+int16_t get_sensor3_value();
+int16_t get_sensor4_value();
+int16_t get_sensor5_value();
+int16_t get_sensor6_value();
+int16_t get_sensor7_value();
+int16_t get_sensor8_value();
+int16_t get_sensor9_value();
+sensor_data_t get_line_sensor_data();
+void process_sensor_data(sensor_data_t sensor_data);
 
 //read data from line sensor in 2 separate groups
-sensor_data_t get_sensor_data()
+sensor_data_t get_line_sensor_data()
 {
 	sensor_data_t sensor_data;
 
@@ -73,11 +74,12 @@ sensor_data_t get_sensor_data()
 	printf("S9: %d; ", sensor_data.sensor9_data);
 	printf("\n");
 #endif
+	process_sensor_data(sensor_data);
 	return sensor_data;
 }
 
 //read adc data of optosensors
-uint16_t get_sensor1_value()
+int16_t get_sensor1_value()
 {
 	select_adc_channel(SENSOR1_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -85,7 +87,7 @@ uint16_t get_sensor1_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor2_value()
+int16_t get_sensor2_value()
 {
 	select_adc_channel(SENSOR2_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -93,7 +95,7 @@ uint16_t get_sensor2_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor3_value()
+int16_t get_sensor3_value()
 {
 	select_adc_channel(SENSOR3_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -101,7 +103,7 @@ uint16_t get_sensor3_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor4_value()
+int16_t get_sensor4_value()
 {
 	select_adc_channel(SENSOR4_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -109,7 +111,7 @@ uint16_t get_sensor4_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor5_value()
+int16_t get_sensor5_value()
 {
 	select_adc_channel(SENSOR5_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -117,7 +119,7 @@ uint16_t get_sensor5_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor6_value()
+int16_t get_sensor6_value()
 {
 	select_adc_channel(SENSOR6_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -125,7 +127,7 @@ uint16_t get_sensor6_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor7_value()
+int16_t get_sensor7_value()
 {
 	select_adc_channel(SENSOR7_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -133,7 +135,7 @@ uint16_t get_sensor7_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor8_value()
+int16_t get_sensor8_value()
 {
 	select_adc_channel(SENSOR8_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -141,7 +143,7 @@ uint16_t get_sensor8_value()
 	return HAL_ADC_GetValue(&adc_handle);
 }
 
-uint16_t get_sensor9_value()
+int16_t get_sensor9_value()
 {
 	select_adc_channel(SENSOR9_CH);
 	HAL_ADC_Start(&adc_handle);
@@ -159,13 +161,25 @@ void select_adc_channel(uint32_t sensor_nr)
 void process_sensor_data(sensor_data_t sensor_data)
 {
 	sensor_data_t detected_color;
-	detected_color.sensor1_data = sensor_data.sensor1_data - sensor1_config.sensor_mid_value;
-	detected_color.sensor2_data = sensor_data.sensor2_data - sensor2_config.sensor_mid_value;
-	detected_color.sensor3_data = sensor_data.sensor3_data - sensor3_config.sensor_mid_value;
-	detected_color.sensor4_data = sensor_data.sensor4_data - sensor4_config.sensor_mid_value;
-	detected_color.sensor5_data = sensor_data.sensor5_data - sensor5_config.sensor_mid_value;
-	detected_color.sensor6_data = sensor_data.sensor6_data - sensor6_config.sensor_mid_value;
-	detected_color.sensor7_data = sensor_data.sensor7_data - sensor7_config.sensor_mid_value;
-	detected_color.sensor8_data = sensor_data.sensor8_data - sensor8_config.sensor_mid_value;
-	detected_color.sensor9_data = sensor_data.sensor9_data - sensor9_config.sensor_mid_value;
+	detected_color.sensor1_data = (sensor1_config.sensor_mid_value - sensor_data.sensor1_data)/10;
+	detected_color.sensor2_data = (sensor2_config.sensor_mid_value - sensor_data.sensor2_data)/10;
+	detected_color.sensor3_data = (sensor3_config.sensor_mid_value - sensor_data.sensor3_data)/10;
+	detected_color.sensor4_data = (sensor4_config.sensor_mid_value - sensor_data.sensor4_data)/10;
+	detected_color.sensor5_data = (sensor5_config.sensor_mid_value - sensor_data.sensor5_data)/10;
+	detected_color.sensor6_data = (sensor6_config.sensor_mid_value - sensor_data.sensor6_data)/10;
+	detected_color.sensor7_data = (sensor7_config.sensor_mid_value - sensor_data.sensor7_data)/10;
+	detected_color.sensor8_data = (sensor8_config.sensor_mid_value - sensor_data.sensor8_data)/10;
+	detected_color.sensor9_data = (sensor9_config.sensor_mid_value - sensor_data.sensor9_data)/10;
+#ifdef DEBUG_MODE
+	printf("C1: %d; ", detected_color.sensor1_data);
+	printf("C2: %d; ", detected_color.sensor2_data);
+	printf("C3: %d; ", detected_color.sensor3_data);
+	printf("C4: %d; ", detected_color.sensor4_data);
+	printf("C5: %d; ", detected_color.sensor5_data);
+	printf("C6: %d; ", detected_color.sensor6_data);
+	printf("C7: %d; ", detected_color.sensor7_data);
+	printf("C8: %d; ", detected_color.sensor8_data);
+	printf("C9: %d; ", detected_color.sensor9_data);
+	printf("\n");
+#endif
 }

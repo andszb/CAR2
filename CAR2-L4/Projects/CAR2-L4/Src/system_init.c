@@ -56,6 +56,7 @@ int8_t system_init()
 	//call line-sensor init function
 	adc_init();
 
+	config_sensors();
 	return 0;
 }
 

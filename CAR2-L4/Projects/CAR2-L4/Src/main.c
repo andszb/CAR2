@@ -84,17 +84,16 @@ int main(void)
 		return -1;
 
 	/* Init thread */
-//	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
-//	osThreadCreate (osThread(Start), NULL);
+	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
+	osThreadCreate (osThread(Start), NULL);
 
 	/* Start scheduler */
-//	osKernelStart();
+	osKernelStart();
 
 	/* We should never get here as control is now taken by the scheduler */
 	for (;;) {
-		get_sensor_data();
-		get_rpm();
-		HAL_Delay(1000);
+
+
 	}
 }
 

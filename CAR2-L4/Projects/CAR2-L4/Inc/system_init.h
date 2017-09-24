@@ -18,9 +18,9 @@ ADC_ChannelConfTypeDef adc_ch_conf;
 ADC_HandleTypeDef adc_handle;
 
 typedef struct {
-	uint16_t sensor_min_value;
-	uint16_t sensor_max_value;
-	uint16_t sensor_mid_value;
+	int16_t sensor_min_value;
+	int16_t sensor_max_value;
+	int16_t sensor_mid_value;
 } config_sensor_t;
 
 config_sensor_t sensor1_config;
