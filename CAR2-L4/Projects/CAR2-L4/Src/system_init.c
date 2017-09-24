@@ -108,7 +108,7 @@ int8_t portA_init()
 
 	//init D4 (PA3) pin as TIM5 IC input
 	GPIO_InitDef.Pin = GPIO_PIN_3;
-	GPIO_InitDef.Mode = GPIO_MODE_IT_RISING;	// maybe AF_OD?
+	GPIO_InitDef.Mode = GPIO_MODE_AF_OD;
 	GPIO_InitDef.Pull = GPIO_NOPULL;
 	GPIO_InitDef.Alternate = GPIO_AF2_TIM5;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitDef);
@@ -329,7 +329,7 @@ int8_t proximity_timer_init()
 }
 
 
-int8_t rpm_measure_init()
+int8_t rpm_measure_init()	//initialize TIM5 for input capture mode
 {
 	__HAL_RCC_TIM5_CLK_ENABLE();
 
@@ -339,7 +339,7 @@ int8_t rpm_measure_init()
 	ic_handle.Init.RepetitionCounter = 0xFF;
 	ic_handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	ic_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	ic_handle.Init.Period = 0xFFFF;
+	ic_handle.Init.Period = 65535;
 	ic_handle.Init.Prescaler = 0;
 	HAL_TIM_IC_Init(&ic_handle);
 

@@ -110,9 +110,8 @@ void decelerate()
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	printf("something\n");
 	ic_cntr.prev = ic_cntr.last;
-	ic_cntr.last = TIM5 -> CCR1;
+	ic_cntr.last = TIM5 -> CCR4;	// because for TIMx CHy the IC register is CCRy
 	ic_cntr.ovf = ovf_cntr;
 	ovf_cntr = 0;
 }
@@ -124,11 +123,12 @@ float get_freq()
 	input_capture_data_t snapshot = ic_cntr;
 	HAL_NVIC_EnableIRQ(TIM5_IRQn);
 
-	float steps = (float)snapshot.ovf * ic_handle.Init.Period + snapshot.last - snapshot.prev;
-	float tim5_clk_freq = (float)SystemCoreClock / 2 / (ic_handle.Init.Prescaler + 1); // Because clock division is 1x, so only sysclock matters
-	float tim5_clk_period = 1 / tim5_clk_freq;
+	uint32_t steps = snapshot.ovf * ic_handle.Init.Period + snapshot.last - snapshot.prev;
+	uint32_t tim5_clk_freq = SystemCoreClock / (ic_handle.Init.Prescaler + 1); // Because clock division is 1x, so only sysclock matters
+	float tim5_clk_period = 1 / (float)tim5_clk_freq;
 	float signal_period = steps * tim5_clk_period;
 	float signal_freq = 1 / signal_period;
+	printf("freq: %f", signal_freq);
 
 	if (isnan(signal_freq) || isinf(signal_freq))
 		return -1;
@@ -144,6 +144,7 @@ float get_rpm()
 		return prev_rpm_value;
 	} else {
 		prev_rpm_value = rpm;
+		printf("\t   RPM: %.0f\n", rpm);
 		return rpm;
 	}
 }
