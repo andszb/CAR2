@@ -3,6 +3,7 @@
 #define DEBUG_MODE
 
 uint8_t button_pressed = 0;
+uint32_t measured_distance = 0;
 
 void control_thread()
 {
@@ -17,7 +18,7 @@ void control_thread()
 			}
 		}
 //		check for any object
-		uint32_t measured_distance = read_proximity_data();
+		measured_distance = read_proximity_data();
 		process_proximity(measured_distance);
 #ifdef DEBUG_MODE
 		printf("\ndistance: %lu\n", measured_distance);

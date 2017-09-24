@@ -14,19 +14,6 @@
 #define SENSOR9_CH	ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
 #define DEBUG_MODE
 
-//define sensor data structure
-typedef struct {
-	int16_t sensor1_data;
-	int16_t sensor2_data;
-	int16_t sensor3_data;
-	int16_t sensor4_data;
-	int16_t sensor5_data;
-	int16_t sensor6_data;
-	int16_t sensor7_data;
-	int16_t sensor8_data;
-	int16_t sensor9_data;
-} sensor_data_t;
-
 void select_adc_channel(uint32_t sensor_nr);
 int16_t get_sensor1_value();
 int16_t get_sensor2_value();
@@ -37,7 +24,6 @@ int16_t get_sensor6_value();
 int16_t get_sensor7_value();
 int16_t get_sensor8_value();
 int16_t get_sensor9_value();
-sensor_data_t get_line_sensor_data();
 void process_sensor_data(sensor_data_t sensor_data);
 
 //read data from line sensor in 2 separate groups
@@ -62,6 +48,7 @@ sensor_data_t get_line_sensor_data()
 	sensor_data.sensor4_data = get_sensor4_value();
 	sensor_data.sensor6_data = get_sensor6_value();
 	sensor_data.sensor8_data = get_sensor8_value();
+
 #ifdef DEBUG_MODE
 	printf("S1: %d; ", sensor_data.sensor1_data);
 	printf("S2: %d; ", sensor_data.sensor2_data);
@@ -74,7 +61,9 @@ sensor_data_t get_line_sensor_data()
 	printf("S9: %d; ", sensor_data.sensor9_data);
 	printf("\n");
 #endif
+
 	process_sensor_data(sensor_data);
+
 	return sensor_data;
 }
 
@@ -170,6 +159,7 @@ void process_sensor_data(sensor_data_t sensor_data)
 	detected_color.sensor7_data = (sensor7_config.sensor_mid_value - sensor_data.sensor7_data)/10;
 	detected_color.sensor8_data = (sensor8_config.sensor_mid_value - sensor_data.sensor8_data)/10;
 	detected_color.sensor9_data = (sensor9_config.sensor_mid_value - sensor_data.sensor9_data)/10;
+
 #ifdef DEBUG_MODE
 	printf("C1: %d; ", detected_color.sensor1_data);
 	printf("C2: %d; ", detected_color.sensor2_data);

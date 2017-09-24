@@ -44,6 +44,7 @@ int8_t system_init()
 	printf("UART Printf Example: retarget the C library printf function to the UART\r\n");
 	printf("** Test finished successfully. ** \r\n");
 #endif
+
 	//call pin init functions
 	pins_init();
 
@@ -57,6 +58,7 @@ int8_t system_init()
 	adc_init();
 
 	config_sensors();
+
 	return 0;
 }
 
@@ -68,6 +70,7 @@ int8_t pins_init()
 	portB_init();
 	portC_init();
 	portD_init();
+
 	return 0;
 }
 
@@ -378,8 +381,6 @@ void adc_init()
 	adc_ch_conf.Offset = 0;
 	adc_ch_conf.Rank = 1;
 	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
-
-	HAL_ADC_Init(&adc_handle);
 	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 
 #ifdef DEBUG_MODE

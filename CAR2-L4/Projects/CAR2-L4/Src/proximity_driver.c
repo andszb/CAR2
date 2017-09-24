@@ -7,6 +7,7 @@ uint32_t proxim1_cntr = 0;
 uint32_t proxim2_cntr = 0;
 int8_t proxim_flag = 0;
 uint32_t cm_cntr = 0;
+//extern int16_t required_rpm;
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
@@ -18,7 +19,7 @@ void proximity2_send_trigger();
 
 void proximity1_send_trigger()
 {
-	/* @todo: for test on auto use D3 (PB0) */
+	/* @todo: for test on car use D3 (PB0) */
 	//send trigger pin to D3 (PB0)
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 	osDelay(1);
@@ -72,8 +73,7 @@ uint32_t read_proximity_data()
 	uint32_t sum = 0;
 	uint8_t error_filter = 5;
 
-	for (int i = 0; i < error_filter; i++){
-
+	for (int i = 0; i < error_filter; i++) {
 		cm_cntr = 0;
 		proxim1_cntr = 0;
 		proxim_flag = 1;
@@ -104,13 +104,12 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 		printf("proxim2_cntr: %lu - \n", proxim2_cntr);
 #endif
-		if ((proxim1_cntr > 600) || (proxim2_cntr > 600)){
+		if ((proxim1_cntr > 600) || (proxim2_cntr > 600)) {
 			//measure failure
 			measure_failed++;
 
-		} else if ((proxim1_cntr < 600) && (proxim2_cntr < 600)){
+		} else if ((proxim1_cntr < 600) && (proxim2_cntr < 600)) {
 			sum = sum + (proxim1_cntr + proxim2_cntr);
-
 		}
 	}
 
@@ -119,6 +118,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 	printf("distance: %lu, failure: %d\n\n", distance, measure_failed);
 #endif
+
 	return distance;
 }
 
@@ -126,37 +126,41 @@ uint8_t process_proximity(uint32_t distance)
 {
 	object_flag = 0;
 	if ((distance < 30) && (distance > 8)) {
-
-			//stop_drive();
+//			required_rpm = 0;
 			object_flag = 40;
 
 #ifdef DEBUG_MODE
 			printf("Disable signal sent.\n");
 #endif
+
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET); 	//green led
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);		//red led
 
-		} else if ((distance < 50) && (distance > 30)) {
-			//stop_drive();
+		} else if ((distance < 50) && (distance >= 30)) {
+//			required_rpm = 0;
 			object_flag = 40;
+
 #ifdef DEBUG_MODE
 			printf("Stop signal sent.\n");
 #endif
+
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET); 	//green led
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);					//red led
 
-		} else if ((distance < 150)  && (distance > 50)) {
+		} else if ((distance < 150)  && (distance >= 50)) {
 			//decelerate();
 			object_flag = 20;
+
 #ifdef DEBUG_MODE
 			printf("Decelerate signal sent.\n");
 #endif
+
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7); 	//green led
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);	//red led
 
 		} else {
-			object_flag = 10;
 			//go();
+			object_flag = 10;
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);		//green led
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);	//red led
 		}

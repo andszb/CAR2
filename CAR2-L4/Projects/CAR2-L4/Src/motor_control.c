@@ -1,6 +1,8 @@
 #include "motor_control.h"
 #include <math.h> //for isnan, isinf
 
+#define SLOW	150
+
 typedef struct {
 	uint32_t ovf;
 	uint32_t prev;
@@ -40,16 +42,16 @@ void print_float(float value, int decimal_digits)
 }
 
 
-void set_direction(int8_t dir)
-{
-	if (dir == 1) {				// set forward
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
-	} else if (dir == -1) {		// set reverse
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_SET);
-	}
-}
+//void set_direction(int8_t dir)
+//{
+//	if (dir == 1) {				// set forward
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+//	} else if (dir == -1) {		// set reverse
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_SET);
+//	}
+//}
 
 
 float pi_control()
@@ -69,42 +71,45 @@ float pi_control()
 }
 
 
-void stop_drive()
-{
-	HAL_TIM_PWM_Stop(&motor_pwm_handle, TIM_CHANNEL_1);
-}
+//void stop_drive()
+//{
+//	HAL_TIM_PWM_Stop(&motor_pwm_handle, TIM_CHANNEL_1);
+//}
 
 
-void disable_drive()
-{
-	stop_drive();
-	HAL_TIM_PWM_DeInit(&motor_pwm_handle);
-	// Disable output pin
-	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_15);
-}
+//void disable_drive()
+//{
+//	stop_drive();
+//	HAL_TIM_PWM_DeInit(&motor_pwm_handle);
+//	// Disable output pin
+//	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_15);
+//}
 
 
 void go()
 {
-	for (uint8_t i = 25; i > 15; i--) {
-		duty = i;
-		motor_pwm_set_duty(duty);
-		osDelay(30);
-	}
+//	for (uint8_t i = 25; i > 15; i--) {
+//		duty = i;
+//		motor_pwm_set_duty(duty);
+//		osDelay(30);
+//	}
+	required_rpm = SLOW;
 }
 
 
 void accelerate()
 {
-	duty *= 1.2;
-	motor_pwm_set_duty(duty);
+//	duty *= 1.2;
+//	motor_pwm_set_duty(duty);
+	required_rpm *= 1.2;
 }
 
 
 void decelerate()
 {
-	duty *= 0.8;
-	motor_pwm_set_duty(duty);
+//	duty *= 0.8;
+//	motor_pwm_set_duty(duty);
+	required_rpm *= 0.8;
 }
 
 
