@@ -3,9 +3,9 @@
 #define __CONTROL_H
 
 #include "cmsis_os.h"
-#include "servo_control.h"
-#include "motor_control.h"
-#include "proximity_driver.h"
+#include "stdio.h"
+#include "stm32l4xx_hal.h"
+#include "stm32l475e_iot01.h"
 
 extern uint32_t ovf_cntr;
 extern uint32_t cm_cntr;

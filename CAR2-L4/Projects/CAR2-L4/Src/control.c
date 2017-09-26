@@ -1,4 +1,8 @@
 #include "control.h"
+#include "servo_control.h"
+#include "motor_control.h"
+#include "proximity_driver.h"
+#include "proximity_driver.h"
 
 #define DEBUG_MODE
 
@@ -15,7 +19,7 @@ void control_thread()
 // 		determine line position
 		get_line_sensor_data();
 
-		set_servo_angle(pd_control());
+		turn_servo();
 //		determine required rpm
 		motor_pwm_set_duty(pi_control());
 		osDelay(1000);
