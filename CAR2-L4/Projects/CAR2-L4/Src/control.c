@@ -2,7 +2,6 @@
 #include "servo_control.h"
 #include "motor_control.h"
 #include "proximity_driver.h"
-#include "proximity_driver.h"
 
 //#define DEBUG_MODE
 

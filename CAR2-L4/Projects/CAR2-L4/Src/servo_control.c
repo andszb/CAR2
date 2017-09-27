@@ -15,6 +15,8 @@ float ctrler_out = 0.0;
 int8_t last_line_position = 0;
 
 void servo_pwm_set_duty(float duty);
+void set_servo_angle();
+
 void set_servo_angle()
 {
 /*
@@ -55,12 +57,12 @@ float pd_control()
 
 void turn_servo()
 {
-	if (no_line_flag == 0){
+	if (no_line_flag == 0) {
 		set_servo_angle();
 		last_line_position = line_position;
-	} else if(no_line_flag == 1){
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
-			if (last_line_position == 4){
+	} else if(no_line_flag == 1) {
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++) {
+			if (last_line_position == 4) {
 				float duty = 7.5 + ((5.0 / 72.0) * 36.0);
 				servo_pwm_set_duty(duty);
 			} else if (last_line_position == -4){
@@ -68,8 +70,8 @@ void turn_servo()
 				servo_pwm_set_duty(duty);
 			}
 		}
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
-			if (last_line_position == 4){
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++) {
+			if (last_line_position == 4) {
 				float duty = 7.5 + ((5.0 / 72.0) * -36.0);
 				servo_pwm_set_duty(duty);
 			} else if (last_line_position == -4){

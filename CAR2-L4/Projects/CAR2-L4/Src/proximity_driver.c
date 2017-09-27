@@ -83,13 +83,13 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 1.\n");
 #endif
-
 		}
 		proxim1_cntr = cm_cntr;
 #ifdef DEBUG_MODE
 		printf("proxim1_cntr: %lu", proxim1_cntr);
 #endif
 		HAL_Delay(3);
+
 		cm_cntr = 0;
 		proxim2_cntr = 0;
 		proxim_flag = 1;
@@ -99,17 +99,18 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 2.\n");
 #endif
-			osDelay(3);
 		}
 		proxim2_cntr = cm_cntr;
 #ifdef DEBUG_MODE
 		printf("proxim2_cntr: %lu - \n", proxim2_cntr);
 #endif
+		HAL_Delay(3);
+
 		if ((proxim1_cntr > 600) || (proxim2_cntr > 600)) {
 			//measure failure
 			measure_failed++;
 
-		} else if ((proxim1_cntr < 600) && (proxim2_cntr < 600)) {
+		} else if ((proxim1_cntr <= 600) && (proxim2_cntr <= 600)) {
 			sum = sum + (proxim1_cntr + proxim2_cntr);
 		}
 	}
@@ -119,7 +120,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 	printf("distance: %lu, failure: %d\n\n", distance, measure_failed);
 #endif
-	HAL_Delay(3);
+
 	return distance;
 }
 

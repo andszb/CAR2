@@ -12,21 +12,10 @@
 #define SENSOR7_CH	ADC_CHANNEL_9		//D7 L4 pin - PA4 STM32 pin
 #define SENSOR8_CH	ADC_CHANNEL_6		//D0 L4 pin - PA1 STM32 pin
 #define SENSOR9_CH	ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
-#define DEBUG_MODE
-uint8_t color_sensitivity = 2;
 
-//define sensor data structure
-typedef struct {
-	int16_t sensor1_data;
-	int16_t sensor2_data;
-	int16_t sensor3_data;
-	int16_t sensor4_data;
-	int16_t sensor5_data;
-	int16_t sensor6_data;
-	int16_t sensor7_data;
-	int16_t sensor8_data;
-	int16_t sensor9_data;
-} sensor_data_t;
+#define DEBUG_MODE
+
+uint8_t color_sensitivity = 2;
 
 void select_adc_channel(uint32_t sensor_nr);
 int16_t get_sensor1_value();
@@ -58,8 +47,8 @@ sensor_data_t get_line_sensor_data()
 	sensor_data.sensor5_data = get_sensor5_value();
 	sensor_data.sensor7_data = get_sensor7_value();
 	sensor_data.sensor9_data = get_sensor9_value();
-	//turn on sensor group 2
 
+	//turn on sensor group 2
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
 	HAL_Delay(1);
@@ -68,6 +57,7 @@ sensor_data_t get_line_sensor_data()
 	sensor_data.sensor4_data = get_sensor4_value();
 	sensor_data.sensor6_data = get_sensor6_value();
 	sensor_data.sensor8_data = get_sensor8_value();
+
 #ifdef DEBUG_MODE
 	printf("S1: %d; ", sensor_data.sensor1_data);
 	printf("S2: %d; ", sensor_data.sensor2_data);
@@ -168,7 +158,6 @@ void select_adc_channel(uint32_t sensor_nr)
 
 void process_sensor_data(sensor_data_t sensor_data)
 {
-
 	sensor_data_t detected_color;
 	detected_color.sensor1_data = (sensor1_config.sensor_mid_value - sensor_data.sensor1_data) / 100;
 	detected_color.sensor2_data = (sensor2_config.sensor_mid_value - sensor_data.sensor2_data) / 100;
@@ -259,13 +248,16 @@ int16_t calculate_background_color(sensor_data_t detected_color)
 		cntr++;
 	}
 	background_color = background_sum / cntr;
+
 	return background_color;
 }
+
 int8_t calculate_line_position(sensor_data_t detected_color, int16_t background_color)
 {
 	if ((detected_color.sensor5_data > background_color + color_sensitivity) ||
 		(detected_color.sensor5_data < background_color - color_sensitivity)) {
 		line_position = 0;
+		no_line_flag = 0;
 	} else if ((detected_color.sensor4_data > background_color + color_sensitivity) ||
 				(detected_color.sensor4_data < background_color - color_sensitivity)) {
 		line_position = -1;
