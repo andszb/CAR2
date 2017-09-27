@@ -2,9 +2,10 @@
 #ifndef __SERVO_CONTROL_H
 #define __SERVO_CONTROL_H
 
-#include "system_init.h"
 
-void set_servo_angle(float angle);
+
+void set_servo_angle();
 float pd_control();
+void turn_servo();
 
 #endif /* __SERVO_CONTROL_H */

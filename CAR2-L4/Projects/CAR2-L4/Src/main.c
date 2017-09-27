@@ -49,7 +49,6 @@
 #include "system_init.h"
 #include "control.h"
 #include "uart.h"
-#include "adc_driver.h"
 #include "wifi_functions.h"
 #include "servo_control.h"
 #include "cmsis_os.h"

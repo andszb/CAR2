@@ -3,8 +3,11 @@
 #define __ADC_DRIVER_H
 
 #include "stdio.h"
+#include <stdlib.h>
 #include "stm32l4xx_hal.h"
 #include "stm32l475e_iot01.h"
+int8_t line_position = 0;
+int8_t no_line_flag = 0;
 
 //define sensor data structure
 typedef struct {

@@ -55,7 +55,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			HAL_NVIC_DisableIRQ(TIM4_IRQn);
 			proxim_flag = 1;
 #ifdef DEBUG_MODE
-				printf("up   ");
+				printf("up ");
 #endif
 		} else if (proxim_flag == 1) {
 			HAL_NVIC_EnableIRQ(TIM4_IRQn);
@@ -83,12 +83,13 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 1.\n");
 #endif
-			osDelay(3);
+
 		}
 		proxim1_cntr = cm_cntr;
 #ifdef DEBUG_MODE
 		printf("proxim1_cntr: %lu", proxim1_cntr);
 #endif
+		HAL_Delay(3);
 		cm_cntr = 0;
 		proxim2_cntr = 0;
 		proxim_flag = 1;
@@ -118,7 +119,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 	printf("distance: %lu, failure: %d\n\n", distance, measure_failed);
 #endif
-
+	HAL_Delay(3);
 	return distance;
 }
 

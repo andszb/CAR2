@@ -209,10 +209,10 @@ int8_t portB_init()
 #ifdef DEBUG_MODE
 	printf("Sensor groups pin init done.\n");
 #endif
-	//Turn of line sensor leds
+	//Turn on line sensor leds
 
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
 
 	return 0;
 }
@@ -381,6 +381,8 @@ void adc_init()
 	adc_ch_conf.Offset = 0;
 	adc_ch_conf.Rank = 1;
 	adc_ch_conf.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
+
+	HAL_ADC_Init(&adc_handle);
 	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 
 #ifdef DEBUG_MODE
@@ -429,32 +431,32 @@ int8_t tim5_ic_it_init()
 
 void config_sensors()
 {
-	sensor1_config.sensor_max_value = 4095;
-	sensor1_config.sensor_min_value = 0;
+	sensor1_config.sensor_max_value = 3149;
+	sensor1_config.sensor_min_value = 203;
 	sensor1_config.sensor_mid_value = (sensor1_config.sensor_max_value + sensor1_config.sensor_min_value)/2;
-	sensor2_config.sensor_max_value = 4095;
-	sensor2_config.sensor_min_value = 0;
+	sensor2_config.sensor_max_value = 2985;
+	sensor2_config.sensor_min_value = 211;
 	sensor2_config.sensor_mid_value = (sensor2_config.sensor_max_value + sensor2_config.sensor_min_value)/2;
-	sensor3_config.sensor_max_value = 4095;
-	sensor3_config.sensor_min_value = 0;
+	sensor3_config.sensor_max_value = 2732;
+	sensor3_config.sensor_min_value = 183;
 	sensor3_config.sensor_mid_value = (sensor3_config.sensor_max_value + sensor3_config.sensor_min_value)/2;
-	sensor4_config.sensor_max_value = 4095;
-	sensor4_config.sensor_min_value = 0;
+	sensor4_config.sensor_max_value = 2595;
+	sensor4_config.sensor_min_value = 183;
 	sensor4_config.sensor_mid_value = (sensor4_config.sensor_max_value + sensor4_config.sensor_min_value)/2;
-	sensor5_config.sensor_max_value = 4095;
-	sensor5_config.sensor_min_value = 0;
+	sensor5_config.sensor_max_value = 2845;
+	sensor5_config.sensor_min_value = 194;
 	sensor5_config.sensor_mid_value = (sensor5_config.sensor_max_value + sensor5_config.sensor_min_value)/2;
-	sensor6_config.sensor_max_value = 4095;
-	sensor6_config.sensor_min_value = 0;
+	sensor6_config.sensor_max_value = 2340;
+	sensor6_config.sensor_min_value = 179;
 	sensor6_config.sensor_mid_value = (sensor6_config.sensor_max_value + sensor6_config.sensor_min_value)/2;
-	sensor7_config.sensor_max_value = 4095;
-	sensor7_config.sensor_min_value = 0;
+	sensor7_config.sensor_max_value = 2519;
+	sensor7_config.sensor_min_value = 192;
 	sensor7_config.sensor_mid_value = (sensor7_config.sensor_max_value + sensor7_config.sensor_min_value)/2;
-	sensor8_config.sensor_max_value = 4095;
-	sensor8_config.sensor_min_value = 0;
+	sensor8_config.sensor_max_value = 2769;
+	sensor8_config.sensor_min_value = 190;
 	sensor8_config.sensor_mid_value = (sensor8_config.sensor_max_value + sensor8_config.sensor_min_value)/2;
-	sensor9_config.sensor_max_value = 4095;
-	sensor9_config.sensor_min_value = 0;
+	sensor9_config.sensor_max_value = 2880;
+	sensor9_config.sensor_min_value = 203;
 	sensor9_config.sensor_mid_value = (sensor9_config.sensor_max_value + sensor9_config.sensor_min_value)/2;
 }
 
