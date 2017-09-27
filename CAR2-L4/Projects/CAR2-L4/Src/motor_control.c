@@ -119,6 +119,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	ic_cntr.last = TIM5 -> CCR4;	// because for TIMx CHy the IC register is CCRy
 	ic_cntr.ovf = ovf_cntr;
 	ovf_cntr = 0;
+	printf("Capture!\n");
 }
 
 
@@ -144,7 +145,7 @@ float get_freq()
 
 float get_rpm()
 {
-	float rpm = get_freq() * 60 / 7;
+	float rpm = get_freq() * 60;
 	if (rpm < 0) {
 		return prev_rpm_value;
 	} else {

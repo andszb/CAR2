@@ -1,6 +1,6 @@
 #include "control.h"
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 uint8_t button_pressed = 0;
 uint32_t measured_distance = 0;
