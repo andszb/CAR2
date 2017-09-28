@@ -192,6 +192,10 @@ int8_t portB_init()
 	GPIO_InitDef.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
+	// set forward direction
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+
 #ifdef DEBUG_MODE
 	printf("Motor direction pin init done.\n");
 #endif

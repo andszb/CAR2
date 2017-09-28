@@ -1,7 +1,7 @@
 #include "motor_control.h"
 #include <math.h> //for isnan, isinf
 
-#define SLOW	150
+#define SLOW	60
 
 typedef struct {
 	uint32_t ovf;
@@ -145,7 +145,7 @@ float get_freq()
 
 float get_rpm()
 {
-	float rpm = get_freq() * 60;
+	float rpm = get_freq() / 4 * 60;
 	if (rpm < 0) {
 		return prev_rpm_value;
 	} else {
