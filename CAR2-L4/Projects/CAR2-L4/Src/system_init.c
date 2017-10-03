@@ -379,7 +379,7 @@ void adc_init()
 	HAL_ADC_ConfigChannel(&adc_handle, &adc_ch_conf);
 
 #ifdef DEBUG_MODE
-	printf("Line-sensors init done.\n");
+	printf("ADC init done.\n");
 #endif
 
 }
@@ -439,32 +439,36 @@ int8_t tim5_ic_it_init()
 
 void config_sensors()
 {
-	sensor1_config.sensor_max_value = 3149;
-	sensor1_config.sensor_min_value = 203;
+	sensor1_config.sensor_max_value = 3942;
+	sensor1_config.sensor_min_value = 151;
 	sensor1_config.sensor_mid_value = (sensor1_config.sensor_max_value + sensor1_config.sensor_min_value)/2;
-	sensor2_config.sensor_max_value = 2985;
-	sensor2_config.sensor_min_value = 211;
+	sensor2_config.sensor_max_value = 3959;
+	sensor2_config.sensor_min_value = 141;
 	sensor2_config.sensor_mid_value = (sensor2_config.sensor_max_value + sensor2_config.sensor_min_value)/2;
-	sensor3_config.sensor_max_value = 2732;
-	sensor3_config.sensor_min_value = 183;
+	sensor3_config.sensor_max_value = 3938;
+	sensor3_config.sensor_min_value = 140;
 	sensor3_config.sensor_mid_value = (sensor3_config.sensor_max_value + sensor3_config.sensor_min_value)/2;
-	sensor4_config.sensor_max_value = 2595;
-	sensor4_config.sensor_min_value = 183;
+	sensor4_config.sensor_max_value = 3927;
+	sensor4_config.sensor_min_value = 130;
 	sensor4_config.sensor_mid_value = (sensor4_config.sensor_max_value + sensor4_config.sensor_min_value)/2;
-	sensor5_config.sensor_max_value = 2845;
-	sensor5_config.sensor_min_value = 194;
+	sensor5_config.sensor_max_value = 3948;
+	sensor5_config.sensor_min_value = 141;
 	sensor5_config.sensor_mid_value = (sensor5_config.sensor_max_value + sensor5_config.sensor_min_value)/2;
-	sensor6_config.sensor_max_value = 2340;
-	sensor6_config.sensor_min_value = 179;
+	sensor6_config.sensor_max_value = 3927;
+	sensor6_config.sensor_min_value = 137;
 	sensor6_config.sensor_mid_value = (sensor6_config.sensor_max_value + sensor6_config.sensor_min_value)/2;
-	sensor7_config.sensor_max_value = 2519;
-	sensor7_config.sensor_min_value = 192;
+	sensor7_config.sensor_max_value = 3912;
+	sensor7_config.sensor_min_value = 134;
 	sensor7_config.sensor_mid_value = (sensor7_config.sensor_max_value + sensor7_config.sensor_min_value)/2;
-	sensor8_config.sensor_max_value = 2769;
-	sensor8_config.sensor_min_value = 190;
+	sensor8_config.sensor_max_value = 3947;
+	sensor8_config.sensor_min_value = 144;
 	sensor8_config.sensor_mid_value = (sensor8_config.sensor_max_value + sensor8_config.sensor_min_value)/2;
-	sensor9_config.sensor_max_value = 2880;
-	sensor9_config.sensor_min_value = 203;
+	sensor9_config.sensor_max_value = 3947;
+	sensor9_config.sensor_min_value = 140;
 	sensor9_config.sensor_mid_value = (sensor9_config.sensor_max_value + sensor9_config.sensor_min_value)/2;
+
+#ifdef DEBUG_MODE
+	printf("Line-sensors init done.\n");
+#endif
 }
 

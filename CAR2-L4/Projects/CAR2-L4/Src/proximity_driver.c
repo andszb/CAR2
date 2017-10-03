@@ -1,5 +1,6 @@
 #include "proximity_driver.h"
 #include "cmsis_os.h"
+#include "motor_control.h"
 
 //#define DEBUG_MODE
 
@@ -80,6 +81,7 @@ uint32_t read_proximity_data()
 		proximity1_send_trigger();
 
 		while (proxim_flag == 0){
+			HAL_Delay(3);
 #ifdef DEBUG_MODE
 			printf("interrupt 1.\n");
 #endif
@@ -89,7 +91,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 		printf("proxim1_cntr: %lu", proxim1_cntr);
 #endif
-		HAL_Delay(3);
+
 		cm_cntr = 0;
 		proxim2_cntr = 0;
 		proxim_flag = 1;
@@ -99,7 +101,7 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 2.\n");
 #endif
-			osDelay(3);
+			HAL_Delay(3);
 		}
 		proxim2_cntr = cm_cntr;
 #ifdef DEBUG_MODE

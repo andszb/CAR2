@@ -11,7 +11,7 @@
 #include "stm32l4xx_hal.h"
 #include "stm32l475e_iot01.h"
 #include "stdio.h"
-#include "motor_control.h"
+
 
 uint8_t object_flag;
 uint32_t distance;

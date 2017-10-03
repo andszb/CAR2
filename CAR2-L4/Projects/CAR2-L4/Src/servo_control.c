@@ -8,7 +8,7 @@ const float ctrler_out_min = -36.0;
 const float ctrler_out_max = 36.0;
 float p_value = 0.1;
 float d_value = 0.1;
-int16_t error = 0;
+int16_t angle_error = 0;
 int16_t prev_error = 0;
 int16_t difference = 0;
 float ctrler_out = 0.0;
@@ -26,6 +26,9 @@ void set_servo_angle()
 	float angle = pd_control();
 	float duty = 7.5 + ((5.0 / 72.0) * (float)angle);
 	servo_pwm_set_duty(duty);
+#ifdef DEBUG_MODE
+	printf("angle: %.2f, duty: %.2f; ", angle, duty);
+#endif
 }
 
 void servo_pwm_set_duty(float duty)
@@ -39,45 +42,57 @@ void servo_pwm_set_duty(float duty)
 
 float pd_control()
 {
-	error = line_position * 36 / 4;
-	difference = error - prev_error;
-	ctrler_out = p_value * (float)error + d_value * (float)difference;
+	//convert line position into angle: from middle position one sensor left or right means 36/4 = 9 degree error
+	angle_error = line_position * 9;
+	difference = angle_error - prev_error;
+	ctrler_out = p_value * (float)angle_error + d_value * (float)difference;
 	if (ctrler_out < ctrler_out_min) {
 		ctrler_out = ctrler_out_min;
 	}
 	else if (ctrler_out > ctrler_out_max) {
 		ctrler_out = ctrler_out_max;
 	}
-	prev_error = error;
+	prev_error = angle_error;
 
 	return ctrler_out;
 }
 
+//turn servo based on line position
 void turn_servo()
 {
 	if (no_line_flag == 0){
+		//If line position is detected, turn servo
 		set_servo_angle();
-		last_line_position = line_position;
-	} else if(no_line_flag == 1){
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
-			if (last_line_position == 4){
-				float duty = 7.5 + ((5.0 / 72.0) * 36.0);
-				servo_pwm_set_duty(duty);
-			} else if (last_line_position == -4){
-				float duty = 7.5 + ((5.0 / 72.0) * -36.0);
-				servo_pwm_set_duty(duty);
-			}
-		}
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
-			if (last_line_position == 4){
-				float duty = 7.5 + ((5.0 / 72.0) * -36.0);
-				servo_pwm_set_duty(duty);
-			} else if (last_line_position == -4){
-				float duty = 7.5 + ((5.0 / 72.0) * 36.0);
-				servo_pwm_set_duty(duty);
-			}
-		}
 
+		//save last line position
+		last_line_position = line_position;
+
+	} else if(no_line_flag == 1){
+		//If no line is detected
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
+			//and the last line position was sensor #1
+			//keep turning 'LINE_DETECT_DELAY' times
+			if (last_line_position == 4){
+				float duty = 7.5 + ((5.0 / 72.0) * 36.0);
+				servo_pwm_set_duty(duty);
+			} else if (last_line_position == -4){
+				//and the last line position was sensor #9
+				//keep turning 'LINE_DETECT_DELAY' times
+				float duty = 7.5 + ((5.0 / 72.0) * -36.0);
+				servo_pwm_set_duty(duty);
+			}
+		}
+		//if there is still no line detected, try to turn to the opposite direction
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
+			if (last_line_position == 4){
+				float duty = 7.5 + ((5.0 / 72.0) * -36.0);
+				servo_pwm_set_duty(duty);
+			} else if (last_line_position == -4){
+				float duty = 7.5 + ((5.0 / 72.0) * 36.0);
+				servo_pwm_set_duty(duty);
+			}
+		}
+		//if there is no line found, stop the car
 	} else {
 		//stop car!
 	}

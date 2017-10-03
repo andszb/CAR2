@@ -1,4 +1,5 @@
 #include "motor_control.h"
+#include "system_init.h"
 #include <math.h> //for isnan, isinf
 
 typedef struct {
