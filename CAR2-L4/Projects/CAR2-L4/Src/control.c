@@ -13,9 +13,9 @@ void control_thread()
 {
 	motor_pwm_set_duty(100);
 	HAL_Delay(20);
-	motor_pwm_set_duty(13);
+	motor_pwm_set_duty(15);
 	HAL_Delay(20);
-	required_rpm = 100;
+	required_rpm = 600;
 
 	while (1) {
 //		if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) {
@@ -34,14 +34,15 @@ void control_thread()
 		printf("\n\ndistance: %lu\n", measured_distance);
 #endif
 // 		determine line position
-		handle_line_position();
+//		handle_line_position();
 
 //		turn_servo();
 //		determine required rpm
 		float dc = pi_control();
-//		uint8_t idc = (uint8_t) dc;
+//		uint8_t idc = (uint8_t)dc;
 //		printf("PI: %d\n", idc);
 		motor_pwm_set_duty(dc);
+//		HAL_Delay(150);
 //		osDelay(1000);
 	}
 

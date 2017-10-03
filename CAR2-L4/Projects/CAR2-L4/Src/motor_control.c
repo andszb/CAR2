@@ -17,8 +17,8 @@ float prev_rpm_value = 0;
 const float m_ctrler_out_min = 0;
 const float m_ctrler_out_max = 100;
 
-float motor_p_value = 0.01;
-float i_value = 0.01;
+float motor_p_value = 0.005;
+float i_value = 0.005;
 int16_t motor_error = 0;
 int16_t integral = 0;
 int16_t required_rpm = 0;
@@ -72,6 +72,7 @@ float pi_control()
 		m_ctrler_out = m_ctrler_out_max;
 		integral -= motor_error;
 	}
+//	printf("%.0f\n", m_ctrler_out);
 	return m_ctrler_out;
 }
 
@@ -151,11 +152,11 @@ float get_freq()
 float get_rpm()
 {
 	float rpm = get_freq() / 4 * 60;
+//	printf("RPM: %.0f\n", rpm);
 	if (rpm < 0) {
 		return prev_rpm_value;
 	} else {
 		prev_rpm_value = rpm;
-//		printf("\t   RPM: %.0f\n", rpm);
 		return rpm;
 	}
 }
