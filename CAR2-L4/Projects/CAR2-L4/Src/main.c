@@ -89,11 +89,16 @@ int main(void)
 	/* Start scheduler */
 //	osKernelStart();
 
+//	motor_pwm_set_duty(100);
+//	HAL_Delay(20);
+//	motor_pwm_set_duty(13);
+
 	/* We should never get here as control is now taken by the scheduler */
-	for (;;) {
-		get_rpm();
-		HAL_Delay(200);
-	}
+//	for (;;) {
+//		get_rpm();
+//		HAL_Delay(200);
+//	}
+	control_thread();
 }
 
 

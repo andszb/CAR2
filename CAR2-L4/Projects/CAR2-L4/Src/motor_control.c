@@ -16,8 +16,8 @@ float prev_rpm_value = 0;
 const float m_ctrler_out_min = 0;
 const float m_ctrler_out_max = 100;
 
-float motor_p_value = 0.1;
-float i_value = 0.1;
+float motor_p_value = 0.01;
+float i_value = 0.01;
 int16_t motor_error = 0;
 int16_t integral = 0;
 int16_t required_rpm = 0;
@@ -56,7 +56,11 @@ void print_float(float value, int decimal_digits)
 
 float pi_control()
 {
-	motor_error = required_rpm - (uint16_t)get_rpm();
+//	printf("%.0f\n", get_rpm());
+	uint16_t rpm = (uint16_t)get_rpm();
+	motor_error = required_rpm - rpm;
+//	printf("req: %d     rpm: %d     error: %d\n", required_rpm, rpm, motor_error);
+//	HAL_Delay(200);
 	integral += motor_error;
 	m_ctrler_out = motor_p_value * (float)motor_error + i_value * (float)integral;
 	if (m_ctrler_out < m_ctrler_out_min) {
@@ -119,7 +123,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	ic_cntr.last = TIM5 -> CCR4;	// because for TIMx CHy the IC register is CCRy
 	ic_cntr.ovf = ovf_cntr;
 	ovf_cntr = 0;
-	printf("Capture!\n");
+//	printf("Capture!\n");
 }
 
 
@@ -134,7 +138,7 @@ float get_freq()
 	float tim5_clk_period = 1 / (float)tim5_clk_freq;
 	float signal_period = steps * tim5_clk_period;
 	float signal_freq = 1 / signal_period;
-	printf("freq: %f", signal_freq);
+//	printf("freq: %.1f\n", signal_freq);
 
 	if (isnan(signal_freq) || isinf(signal_freq))
 		return -1;
@@ -150,7 +154,7 @@ float get_rpm()
 		return prev_rpm_value;
 	} else {
 		prev_rpm_value = rpm;
-		printf("\t   RPM: %.0f\n", rpm);
+//		printf("\t   RPM: %.0f\n", rpm);
 		return rpm;
 	}
 }

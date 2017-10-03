@@ -98,8 +98,9 @@ int8_t portA_init()
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
-	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
 	GPIO_InitDef.Speed = GPIO_SPEED_FAST;
+
+	// Initialize pins D0, D1 and D7 (PA1, PA0, PA4) as ADC input
 	GPIO_InitDef.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
 	GPIO_InitDef.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitDef.Pull = GPIO_PULLDOWN;
