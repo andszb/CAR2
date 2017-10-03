@@ -17,12 +17,12 @@ void control_thread()
 		printf("\n\ndistance: %lu\n", measured_distance);
 #endif
 // 		determine line position
-		process_sensor_data();
+		handle_line_position();
 
 		turn_servo();
 //		determine required rpm
 		motor_pwm_set_duty(pi_control());
-		osDelay(1000);
+		osDelay(100);
 	}
 
 	terminate_thread();

@@ -16,7 +16,7 @@
 
 //fine tune the range considered to same color
 // color_sensitivity = 3 means +- 3 range
-uint8_t color_sensitivity = 5;
+uint8_t color_sensitivity = 10;
 
 //define local variables
 int32_t sensor_average = 0;
@@ -48,14 +48,35 @@ int16_t get_sensor7_value();
 int16_t get_sensor8_value();
 int16_t get_sensor9_value();
 sensor_data_t get_line_sensor_data();
-int16_t calculate_background_color(sensor_data_t detected_color);
-int8_t calculate_line_position(sensor_data_t detected_color, int16_t background_color);
-void process_sensor_data(sensor_data_t sensor_data);
+int16_t calculate_background_color(sensor_data_t detected_color_tmp);
+int8_t calculate_line_position(sensor_data_t detected_color_tmp, int16_t background_color_tmp);
+sensor_data_t process_sensor_data(sensor_data_t sensor_data_tmp);
+
+
+
+void handle_line_position()
+{
+	no_line_flag = 1;
+	line_position = 100;
+
+	sensor_data_t sensor_data = get_line_sensor_data();
+
+	sensor_data_t detected_color = process_sensor_data(sensor_data);
+
+	int16_t detected_background_color = calculate_background_color(detected_color);
+#ifdef DEBUG_MODE
+	printf("background_color: %d; ", detected_background_color);
+#endif
+	line_position = calculate_line_position(detected_color, detected_background_color);
+#ifdef DEBUG_MODE
+	printf("line position: %d; no line flag: %d", line_position, no_line_flag);
+#endif
+}
 
 //read data from line sensor in 2 separate groups
 sensor_data_t get_line_sensor_data()
 {
-	sensor_data_t sensor_data;
+	sensor_data_t sensor_data_tmp;
 
 	//turn on sensor group 1
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -63,11 +84,11 @@ sensor_data_t get_line_sensor_data()
 	HAL_Delay(1); //time for mosfet
 
 	//get sensor group 1 data
-	sensor_data.sensor1_data = get_sensor1_value();
-	sensor_data.sensor3_data = get_sensor3_value();
-	sensor_data.sensor5_data = get_sensor5_value();
-	sensor_data.sensor7_data = get_sensor7_value();
-	sensor_data.sensor9_data = get_sensor9_value();
+	sensor_data_tmp.sensor1_data = get_sensor1_value();
+	sensor_data_tmp.sensor3_data = get_sensor3_value();
+	sensor_data_tmp.sensor5_data = get_sensor5_value();
+	sensor_data_tmp.sensor7_data = get_sensor7_value();
+	sensor_data_tmp.sensor9_data = get_sensor9_value();
 
 	//turn on sensor group 2
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
@@ -75,27 +96,25 @@ sensor_data_t get_line_sensor_data()
 	HAL_Delay(1); //time for mosfet
 
 	//get sensor group 2 data
-	sensor_data.sensor2_data = get_sensor2_value();
-	sensor_data.sensor4_data = get_sensor4_value();
-	sensor_data.sensor6_data = get_sensor6_value();
-	sensor_data.sensor8_data = get_sensor8_value();
+	sensor_data_tmp.sensor2_data = get_sensor2_value();
+	sensor_data_tmp.sensor4_data = get_sensor4_value();
+	sensor_data_tmp.sensor6_data = get_sensor6_value();
+	sensor_data_tmp.sensor8_data = get_sensor8_value();
 
 #ifdef DEBUG_MODE
-	printf("S1: %d; ", sensor_data.sensor1_data);
-	printf("S2: %d; ", sensor_data.sensor2_data);
-	printf("S3: %d; ", sensor_data.sensor3_data);
-	printf("S4: %d; ", sensor_data.sensor4_data);
-	printf("S5: %d; ", sensor_data.sensor5_data);
-	printf("S6: %d; ", sensor_data.sensor6_data);
-	printf("S7: %d; ", sensor_data.sensor7_data);
-	printf("S8: %d; ", sensor_data.sensor8_data);
-	printf("S9: %d; ", sensor_data.sensor9_data);
+	printf("S1: %d; ", sensor_data_tmp.sensor1_data);
+	printf("S2: %d; ", sensor_data_tmp.sensor2_data);
+	printf("S3: %d; ", sensor_data_tmp.sensor3_data);
+	printf("S4: %d; ", sensor_data_tmp.sensor4_data);
+	printf("S5: %d; ", sensor_data_tmp.sensor5_data);
+	printf("S6: %d; ", sensor_data_tmp.sensor6_data);
+	printf("S7: %d; ", sensor_data_tmp.sensor7_data);
+	printf("S8: %d; ", sensor_data_tmp.sensor8_data);
+	printf("S9: %d; ", sensor_data_tmp.sensor9_data);
 	printf("\n");
 #endif
 
-	process_sensor_data(sensor_data);
-
-	return sensor_data;
+	return sensor_data_tmp;
 }
 
 //read adc data of optosensors
@@ -179,172 +198,162 @@ void select_adc_channel(uint32_t sensor_nr)
 }
 
 //process line sensor data, get line position, or no line signal
-void process_sensor_data(sensor_data_t sensor_data)
+sensor_data_t process_sensor_data(sensor_data_t sensor_data_tmp)
 {
-	sensor_data_t detected_color;
+	sensor_data_t detected_color_tmp;
 
 	//turn ADC data into -35 -- +35 range detected color data
 	//negative data means dark colors, positive data means light colors
-	detected_color.sensor1_data = (sensor1_config.sensor_mid_value - sensor_data.sensor1_data) / 100;
-	detected_color.sensor2_data = (sensor2_config.sensor_mid_value - sensor_data.sensor2_data) / 100;
-	detected_color.sensor3_data = (sensor3_config.sensor_mid_value - sensor_data.sensor3_data) / 100;
-	detected_color.sensor4_data = (sensor4_config.sensor_mid_value - sensor_data.sensor4_data) / 100;
-	detected_color.sensor5_data = (sensor5_config.sensor_mid_value - sensor_data.sensor5_data) / 100;
-	detected_color.sensor6_data = (sensor6_config.sensor_mid_value - sensor_data.sensor6_data) / 100;
-	detected_color.sensor7_data = (sensor7_config.sensor_mid_value - sensor_data.sensor7_data) / 100;
-	detected_color.sensor8_data = (sensor8_config.sensor_mid_value - sensor_data.sensor8_data) / 100;
-	detected_color.sensor9_data = (sensor9_config.sensor_mid_value - sensor_data.sensor9_data) / 100;
+	detected_color_tmp.sensor1_data = (sensor_data_tmp.sensor1_data) / 100;
+	detected_color_tmp.sensor2_data = (sensor_data_tmp.sensor2_data) / 100;
+	detected_color_tmp.sensor3_data = (sensor_data_tmp.sensor3_data) / 100;
+	detected_color_tmp.sensor4_data = (sensor_data_tmp.sensor4_data) / 100;
+	detected_color_tmp.sensor5_data = (sensor_data_tmp.sensor5_data) / 100;
+	detected_color_tmp.sensor6_data = (sensor_data_tmp.sensor6_data) / 100;
+	detected_color_tmp.sensor7_data = (sensor_data_tmp.sensor7_data) / 100;
+	detected_color_tmp.sensor8_data = (sensor_data_tmp.sensor8_data) / 100;
+	detected_color_tmp.sensor9_data = (sensor_data_tmp.sensor9_data) / 100;
 #ifdef DEBUG_MODE
-	printf("C1: %d; ", detected_color.sensor1_data);
-	printf("C2: %d; ", detected_color.sensor2_data);
-	printf("C3: %d; ", detected_color.sensor3_data);
-	printf("C4: %d; ", detected_color.sensor4_data);
-	printf("C5: %d; ", detected_color.sensor5_data);
-	printf("C6: %d; ", detected_color.sensor6_data);
-	printf("C7: %d; ", detected_color.sensor7_data);
-	printf("C8: %d; ", detected_color.sensor8_data);
-	printf("C9: %d; ", detected_color.sensor9_data);
+	printf("C1: %d; ", detected_color_tmp.sensor1_data);
+	printf("C2: %d; ", detected_color_tmp.sensor2_data);
+	printf("C3: %d; ", detected_color_tmp.sensor3_data);
+	printf("C4: %d; ", detected_color_tmp.sensor4_data);
+	printf("C5: %d; ", detected_color_tmp.sensor5_data);
+	printf("C6: %d; ", detected_color_tmp.sensor6_data);
+	printf("C7: %d; ", detected_color_tmp.sensor7_data);
+	printf("C8: %d; ", detected_color_tmp.sensor8_data);
+	printf("C9: %d; ", detected_color_tmp.sensor9_data);
 	printf("\n");
 #endif
-	int16_t detected_background_color = calculate_background_color(detected_color);
-#ifdef DEBUG_MODE
-	printf("background_color: %d; ", detected_background_color);
-#endif
-	calculate_line_position(detected_color, detected_background_color);
-#ifdef DEBUG_MODE
-	printf("line position: %d; no line flag: %d", line_position, no_line_flag);
-#endif
+
+	return detected_color_tmp;
 }
 
 //calculate background color based on measured color data
-int16_t calculate_background_color(sensor_data_t detected_color)
+int16_t calculate_background_color(sensor_data_t detected_color_tmp)
 {
+	sensor_average = 0;
 	cntr = 0;
 	background_sum = 0;
-	background_color = 0;
+	int16_t background_color_tmp = 0;
 
 	//calculate all sensor data average
-	sensor_average =   (detected_color.sensor1_data +
-						detected_color.sensor2_data +
-						detected_color.sensor3_data +
-						detected_color.sensor4_data +
-						detected_color.sensor5_data +
-						detected_color.sensor6_data +
-						detected_color.sensor7_data +
-						detected_color.sensor8_data +
-						detected_color.sensor9_data) / 9;
+	sensor_average =   (detected_color_tmp.sensor1_data +
+						detected_color_tmp.sensor2_data +
+						detected_color_tmp.sensor3_data +
+						detected_color_tmp.sensor4_data +
+						detected_color_tmp.sensor5_data +
+						detected_color_tmp.sensor6_data +
+						detected_color_tmp.sensor7_data +
+						detected_color_tmp.sensor8_data +
+						detected_color_tmp.sensor9_data) / 9;
 
 	//select background data (sensors measuring data around average), excluding line(s)
-	if ((detected_color.sensor1_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor1_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor1_data;
+	if ((detected_color_tmp.sensor1_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor1_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor1_data;
 		cntr++;
 	}
-	if ((detected_color.sensor2_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor2_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor2_data;
+	if ((detected_color_tmp.sensor2_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor2_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor2_data;
 		cntr++;
 	}
-	if ((detected_color.sensor3_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor3_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor3_data;
+	if ((detected_color_tmp.sensor3_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor3_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor3_data;
 		cntr++;
 	}
-	if ((detected_color.sensor4_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor4_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor4_data;
+	if ((detected_color_tmp.sensor4_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor4_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor4_data;
 		cntr++;
 	}
-	if ((detected_color.sensor5_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor5_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor5_data;
+	if ((detected_color_tmp.sensor5_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor5_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor5_data;
 		cntr++;
 	}
-	if ((detected_color.sensor6_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor6_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor6_data;
+	if ((detected_color_tmp.sensor6_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor6_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor6_data;
 		cntr++;
 	}
-	if ((detected_color.sensor7_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor7_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor7_data;
+	if ((detected_color_tmp.sensor7_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor7_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor7_data;
 		cntr++;
 	}
-	if ((detected_color.sensor8_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor8_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor8_data;
+	if ((detected_color_tmp.sensor8_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor8_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor8_data;
 		cntr++;
 	}
-	if ((detected_color.sensor9_data < sensor_average + color_sensitivity) &&
-		(detected_color.sensor9_data > sensor_average - color_sensitivity)) {
-		background_sum += detected_color.sensor9_data;
+	if ((detected_color_tmp.sensor9_data < sensor_average + color_sensitivity) &&
+		(detected_color_tmp.sensor9_data > sensor_average - color_sensitivity)) {
+		background_sum = background_sum + detected_color_tmp.sensor9_data;
 		cntr++;
 	}
-	background_color = background_sum / cntr;
+	background_color_tmp = background_sum / cntr;
 
 #ifdef DEBUG_MODE
-	printf("background_sum: %d, cntr: %d; ", background_sum, cntr);
+	printf("background_sum: %lu, cntr: %d; ", background_sum, cntr);
 #endif
 
-	return background_color;
+	return background_color_tmp;
 }
 
-int8_t calculate_line_position(sensor_data_t detected_color, int16_t background_color)
+int8_t calculate_line_position(sensor_data_t detected_color_tmp, int16_t background_color_tmp)
 {
-
 	//select sensors measuring different color compared to background
 	//determine line position based on sensor number
 	//start with middle sensor #5, move outward by pairs: line position range is -4 to +4, 0--middle position
 	//also set no_line_flag: 0--line is detected, 1--no line detected
 
-	if ((detected_color.sensor5_data > background_color + color_sensitivity) ||
-		(detected_color.sensor5_data < background_color - color_sensitivity)) {
+	if ((detected_color_tmp.sensor5_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor5_data < background_color_tmp - color_sensitivity)) {
 		line_position = 0;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor4_data > background_color + color_sensitivity) ||
-				(detected_color.sensor4_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor4_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor4_data < background_color_tmp - color_sensitivity)) {
 		line_position = -1;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor6_data > background_color + color_sensitivity) ||
-				(detected_color.sensor6_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor6_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor6_data < background_color_tmp - color_sensitivity)) {
 		line_position = 1;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor3_data > background_color + color_sensitivity) ||
-				(detected_color.sensor3_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor3_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor3_data < background_color_tmp - color_sensitivity)) {
 		line_position = -2;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor7_data > background_color + color_sensitivity) ||
-			(detected_color.sensor7_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor7_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor7_data < background_color_tmp - color_sensitivity)) {
 		line_position = 2;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor2_data > background_color + color_sensitivity) ||
-				(detected_color.sensor2_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor2_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor2_data < background_color_tmp - color_sensitivity)) {
 		line_position = -3;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor8_data > background_color + color_sensitivity) ||
-				(detected_color.sensor8_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor8_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor8_data < background_color_tmp - color_sensitivity)) {
 		line_position = 3;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor9_data > background_color + color_sensitivity) ||
-				(detected_color.sensor9_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor1_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor1_data < background_color_tmp - color_sensitivity)) {
 		line_position = -4;
 		no_line_flag = 0;
-
-	} else if ((detected_color.sensor9_data > background_color + color_sensitivity) ||
-				(detected_color.sensor9_data < background_color - color_sensitivity)) {
+	}
+	if ((detected_color_tmp.sensor9_data > background_color_tmp + color_sensitivity) ||
+		(detected_color_tmp.sensor9_data < background_color_tmp - color_sensitivity)) {
 		line_position = 4;
 		no_line_flag = 0;
-
-	} else {
-		no_line_flag = 1;
-
 	}
 
 	return line_position;
