@@ -1,4 +1,5 @@
 #include "control.h"
+#include "system_init.h"
 #include "servo_control.h"
 #include "motor_control.h"
 #include "proximity_driver.h"
@@ -30,10 +31,10 @@ void control_thread()
 //		measured_distance = read_proximity_data();
 //		process_proximity(measured_distance);
 #ifdef DEBUG_MODE
-		printf("\ndistance: %lu\n", measured_distance);
+		printf("\n\ndistance: %lu\n", measured_distance);
 #endif
 // 		determine line position
-//		get_line_sensor_data();
+		handle_line_position();
 
 //		turn_servo();
 //		determine required rpm
