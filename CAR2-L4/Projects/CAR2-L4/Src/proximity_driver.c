@@ -81,10 +81,10 @@ uint32_t read_proximity_data()
 		proximity1_send_trigger();
 
 		while (proxim_flag == 0){
-			HAL_Delay(3);
 #ifdef DEBUG_MODE
 			printf("interrupt 1.\n");
 #endif
+			HAL_Delay(3);
 		}
 		proxim1_cntr = cm_cntr;
 #ifdef DEBUG_MODE
@@ -101,12 +101,12 @@ uint32_t read_proximity_data()
 #ifdef DEBUG_MODE
 			printf("interrupt 2.\n");
 #endif
+			HAL_Delay(3);
 		}
 		proxim2_cntr = cm_cntr;
 #ifdef DEBUG_MODE
 		printf("proxim2_cntr: %lu - \n", proxim2_cntr);
 #endif
-		HAL_Delay(3);
 
 		if ((proxim1_cntr > 600) || (proxim2_cntr > 600)) {
 			//measure failure
