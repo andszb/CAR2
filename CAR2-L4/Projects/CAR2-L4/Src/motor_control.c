@@ -17,8 +17,8 @@ float prev_rpm_value = 0;
 const float m_ctrler_out_min = 0;
 const float m_ctrler_out_max = 100;
 
-float motor_p_value = 0.005;
-float i_value = 0.005;
+float motor_p_value = 0.05;
+float i_value = 0.001;
 int16_t motor_error = 0;
 int16_t integral = 0;
 int16_t required_rpm = 0;
@@ -61,7 +61,7 @@ float pi_control()
 	uint16_t rpm = (uint16_t)get_rpm();
 	motor_error = required_rpm - rpm;
 //	printf("req: %d     rpm: %d     error: %d\n", required_rpm, rpm, motor_error);
-//	HAL_Delay(200);
+//	HAL_Delay(50);
 	integral += motor_error;
 	m_ctrler_out = motor_p_value * (float)motor_error + i_value * (float)integral;
 	if (m_ctrler_out < m_ctrler_out_min) {
