@@ -12,6 +12,7 @@
 #define SENSOR7		ADC_CHANNEL_9		//D7 L4 pin - PA4 STM32 pin
 #define SENSOR8		ADC_CHANNEL_6		//D0 L4 pin - PA1 STM32 pin
 #define SENSOR9		ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
+
 #define DEBUG_MODE
 
 //fine tune the range considered to same color

@@ -9,6 +9,7 @@
 
 extern uint32_t ovf_cntr;
 extern uint32_t cm_cntr;
+extern int16_t required_rpm;
 
 void control_thread();
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
