@@ -20,6 +20,7 @@ int16_t prev_error = 0;
 int16_t difference = 0;
 float ctrler_out = 0.0;
 int8_t last_line_position = 0;
+extern uint16_t required_rpm;
 
 void servo_pwm_set_duty(float duty);
 float calculate_duty(float angle_tmp);
@@ -127,5 +128,6 @@ void turn_servo(int8_t line_position_tmp)
 		//if no line is found, stop the car
 	} else {
 		//stop car!
+		required_rpm = 0;
 	}
 }
