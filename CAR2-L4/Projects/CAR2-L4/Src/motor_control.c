@@ -2,7 +2,7 @@
 #include "system_init.h"
 #include <math.h> //for isnan, isinf
 
-#define SLOW	60
+#define SLOW	80
 
 typedef struct {
 	uint32_t ovf;
@@ -15,10 +15,10 @@ uint32_t ovf_cntr = 0;
 float prev_rpm_value = 0;
 
 const float m_ctrler_out_min = 0;
-const float m_ctrler_out_max = 100;
+const float m_ctrler_out_max = 30;
 
 float motor_p_value = 0.05;
-float i_value = 0.001;
+float i_value = 0.01;
 int16_t motor_error = 0;
 int16_t integral = 0;
 int16_t required_rpm = 0;
@@ -60,8 +60,8 @@ float pi_control()
 //	printf("%.0f\n", get_rpm());
 	uint16_t rpm = (uint16_t)get_rpm();
 	motor_error = required_rpm - rpm;
-//	printf("req: %d     rpm: %d     error: %d\n", required_rpm, rpm, motor_error);
-//	HAL_Delay(50);
+	printf("req: %d     rpm: %d     error: %d\n", required_rpm, rpm, motor_error);
+	HAL_Delay(50);
 	integral += motor_error;
 	m_ctrler_out = motor_p_value * (float)motor_error + i_value * (float)integral;
 	if (m_ctrler_out < m_ctrler_out_min) {
@@ -72,7 +72,7 @@ float pi_control()
 		m_ctrler_out = m_ctrler_out_max;
 		integral -= motor_error;
 	}
-//	printf("%.0f\n", m_ctrler_out);
+//	printf("duty cycle: %.0f\n", m_ctrler_out);
 	return m_ctrler_out;
 }
 
@@ -94,12 +94,13 @@ float pi_control()
 
 void go()
 {
-//	for (uint8_t i = 25; i > 15; i--) {
-//		duty = i;
-//		motor_pwm_set_duty(duty);
-//		osDelay(30);
-//	}
 	required_rpm = SLOW;
+}
+
+
+void stop()
+{
+	required_rpm = 0;
 }
 
 

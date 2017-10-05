@@ -12,35 +12,40 @@ uint32_t measured_distance = 0;
 
 void control_thread()
 {
+//	required_rpm = 200;
 	while (1) {
 		if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) {
 			if (!button_pressed) {
-				required_rpm = 100;
+				go();
 				button_pressed = 1;
+				osDelay(100);
 			} else {
-				required_rpm = 0;
+				stop();
 				button_pressed = 0;
+				osDelay(100);
 			}
 		}
 		// check for any object
-		measured_distance = read_proximity_data();
-		process_proximity(measured_distance);
+//		measured_distance = read_proximity_data();
+//		process_proximity(measured_distance);
+
 #ifdef DEBUG_MODE
 		printf("\n\ndistance: %lu\n", measured_distance);
 #endif
+
 		// determine line position
 		int8_t measured_line_position = handle_line_position();
 		// turn servo based on line position
 		turn_servo(measured_line_position);
+
 #ifdef DEBUG_MODE
 		printf("\n\nline position: %d\n", measured_line_position);
 #endif
+
 		// control motor via wheel rpm
 		float dc = pi_control();
-//		uint8_t idc = (uint8_t)dc;
-//		printf("PI: %d\n", idc);
 		motor_pwm_set_duty(dc);
-		osDelay(25);
+		osDelay(1);
 	}
 
 	terminate_thread();

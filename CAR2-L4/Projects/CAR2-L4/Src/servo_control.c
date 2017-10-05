@@ -1,8 +1,9 @@
 #include "system_init.h"
 #include "servo_control.h"
+#include "motor_control.h"
 #include "adc_driver.h"
 
-#define LINE_DETECT_DELAY 100
+#define LINE_DETECT_DELAY 10
 #define MAX_ANGLE 36.0
 #define MIN_ANGLE -36.0
 #define DUTY_EXCHANGE_RATE 0.0694
@@ -20,7 +21,6 @@ int16_t prev_error = 0;
 int16_t difference = 0;
 float ctrler_out = 0.0;
 int8_t last_line_position = 0;
-extern uint16_t required_rpm;
 
 void servo_pwm_set_duty(float duty);
 float calculate_duty(float angle_tmp);
@@ -71,63 +71,73 @@ void turn_servo(int8_t line_position_tmp)
 {
 	float angle;
 	float duty;
-	if (no_line_flag == 0){
+	if (no_line_flag == 0) {
 		//If line position is detected, turn servo
 		angle = pd_control(line_position_tmp);
 		duty = calculate_duty(angle);
 		servo_pwm_set_duty(duty);
+
 #ifdef DEBUG_MODE
 		printf("angle: %f, duty: %f; ", angle, duty);
 #endif
+
 		//save last line position
 		last_line_position = line_position_tmp;
 
-	} else if(no_line_flag == 1){
+	} else if (no_line_flag == 1) {
 		//If no line is detected
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++) {
 			//and the last line position was sensor #1
 			//keep turning 'LINE_DETECT_DELAY' times
-			if (last_line_position == 4){
+			if (last_line_position == 4) {
 				angle = 36.0;
 				duty = calculate_duty(angle);
 				servo_pwm_set_duty(duty);
+
 #ifdef DEBUG_MODE
-		printf("angle: %f, duty: %f; ", angle, duty);
+				printf("angle: %f, duty: %f; ", angle, duty);
 #endif
+
 			} else if (last_line_position == -4){
 				//and the last line position was sensor #9
 				//keep turning 'LINE_DETECT_DELAY' times
 				angle = -36.0;
 				duty = calculate_duty(angle);
 				servo_pwm_set_duty(duty);
+
 #ifdef DEBUG_MODE
 		printf("angle: %f, duty: %f; ", angle, duty);
 #endif
+
 			}
 			//HAL_Delay(3);
 		}
 		//if there is still no line detected, try to turn to the opposite direction
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++) {
 			if (last_line_position == 4){
 				angle = -36.0;
 				duty = calculate_duty(angle);
 				servo_pwm_set_duty(duty);
+
 #ifdef DEBUG_MODE
-		printf("angle: %f, duty: %f; ", angle, duty);
+				printf("angle: %f, duty: %f; ", angle, duty);
 #endif
-			} else if (last_line_position == -4){
+
+			} else if (last_line_position == -4) {
 				angle = 36.0;
 				duty = calculate_duty(angle);
 				servo_pwm_set_duty(duty);
+
 #ifdef DEBUG_MODE
-		printf("angle: %f, duty: %f; ", angle, duty);
+				printf("angle: %f, duty: %f; ", angle, duty);
 #endif
+
 			}
 			//HAL_Delay(3);
 		}
 		//if no line is found, stop the car
 	} else {
 		//stop car!
-		required_rpm = 0;
+		stop();
 	}
 }

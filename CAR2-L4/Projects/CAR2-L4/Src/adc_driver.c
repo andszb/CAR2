@@ -13,7 +13,7 @@
 #define SENSOR8		ADC_CHANNEL_6		//D0 L4 pin - PA1 STM32 pin
 #define SENSOR9		ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 //fine tune the range considered to same color
 // color_sensitivity = 3 means +- 3 range
@@ -66,13 +66,17 @@ int8_t handle_line_position()
 	sensor_data_t detected_color = process_sensor_data(sensor_data);
 
 	int16_t detected_background_color = calculate_background_color(detected_color);
+
 #ifdef DEBUG_MODE
 	printf("background_color: %d; ", detected_background_color);
 #endif
+
 	line_position = calculate_line_position(detected_color, detected_background_color);
+
 #ifdef DEBUG_MODE
 	printf("line position: %d; no line flag: %d", line_position, no_line_flag);
 #endif
+
 	return line_position;
 }
 
