@@ -37,9 +37,12 @@ void control_thread()
 		printf("\n\ndistance: %lu\n", measured_distance);
 #endif
 // 		determine line position
-		handle_line_position();
-
-		turn_servo();
+		int8_t measured_line_position = handle_line_position();
+//		turn servo based on line position
+		turn_servo(measured_line_position);
+#ifdef DEBUG_MODE
+		printf("\n\nline position: %d\n", measured_line_position);
+#endif
 //		determine required rpm
 		float dc = pi_control();
 //		uint8_t idc = (uint8_t)dc;

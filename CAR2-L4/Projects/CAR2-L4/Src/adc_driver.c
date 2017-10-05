@@ -24,6 +24,7 @@ int32_t sensor_average = 0;
 int32_t background_color = 0;
 int32_t background_sum = 0;
 int8_t cntr = 0;
+int8_t line_position;
 
 //define sensor data structure
 typedef struct {
@@ -55,7 +56,7 @@ sensor_data_t process_sensor_data(sensor_data_t sensor_data_tmp);
 
 
 
-void handle_line_position()
+int8_t handle_line_position()
 {
 	no_line_flag = 1;
 	line_position = 100;
@@ -72,6 +73,7 @@ void handle_line_position()
 #ifdef DEBUG_MODE
 	printf("line position: %d; no line flag: %d", line_position, no_line_flag);
 #endif
+	return line_position;
 }
 
 //read data from line sensor in 2 separate groups
@@ -318,42 +320,42 @@ int8_t calculate_line_position(sensor_data_t detected_color_tmp, int16_t backgro
 	}
 	if ((detected_color_tmp.sensor4_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor4_data < background_color_tmp - color_sensitivity)) {
-		line_position = -1;
+		line_position = 1;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor6_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor6_data < background_color_tmp - color_sensitivity)) {
-		line_position = 1;
+		line_position = -1;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor3_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor3_data < background_color_tmp - color_sensitivity)) {
-		line_position = -2;
+		line_position = 2;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor7_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor7_data < background_color_tmp - color_sensitivity)) {
-		line_position = 2;
+		line_position = -2;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor2_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor2_data < background_color_tmp - color_sensitivity)) {
-		line_position = -3;
+		line_position = 3;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor8_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor8_data < background_color_tmp - color_sensitivity)) {
-		line_position = 3;
+		line_position = -3;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor1_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor1_data < background_color_tmp - color_sensitivity)) {
-		line_position = -4;
+		line_position = 4;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor9_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor9_data < background_color_tmp - color_sensitivity)) {
-		line_position = 4;
+		line_position = -4;
 		no_line_flag = 0;
 	}
 

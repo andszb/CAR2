@@ -83,22 +83,17 @@ int main(void)
 		return -1;
 
 	/* Init thread */
-//	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
-//	osThreadCreate (osThread(Start), NULL);
+	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 4);
+	osThreadCreate (osThread(Start), NULL);
 
 	/* Start scheduler */
-//	osKernelStart();
-
-//	motor_pwm_set_duty(100);
-//	HAL_Delay(20);
-//	motor_pwm_set_duty(13);
+	osKernelStart();
 
 	/* We should never get here as control is now taken by the scheduler */
-//	for (;;) {
-//		get_rpm();
-//		HAL_Delay(200);
-//	}
-	control_thread();
+	for (;;) {
+
+
+	}
 }
 
 
@@ -109,7 +104,7 @@ int main(void)
   */
 static void StartThread(void const * argument)
 {
-	osThreadDef(control, control_thread, osPriorityHigh, 0, configMINIMAL_STACK_SIZE * 2);
+	osThreadDef(control, control_thread, osPriorityHigh, 0, configMINIMAL_STACK_SIZE * 4);
 	osThreadCreate(osThread(control), NULL);
 
 //	osThreadDef(servo, servo_control_thread, osPriorityAboveNormal, 0, configMINIMAL_STACK_SIZE);
