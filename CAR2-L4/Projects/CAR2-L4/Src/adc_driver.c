@@ -13,7 +13,7 @@
 #define SENSOR8		ADC_CHANNEL_6		//D0 L4 pin - PA1 STM32 pin
 #define SENSOR9		ADC_CHANNEL_5		//D1 L4 pin - PA0 STM32 pin
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 //fine tune the range considered to same color
 // color_sensitivity = 3 means +- 3 range

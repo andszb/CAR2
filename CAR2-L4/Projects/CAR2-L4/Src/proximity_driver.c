@@ -2,7 +2,8 @@
 #include "cmsis_os.h"
 #include "motor_control.h"
 
-//#define DEBUG_MODE
+#define DEBUG_MODE
+#define ERROR_FILTER 5
 
 uint32_t proxim1_cntr = 0;
 uint32_t proxim2_cntr = 0;
@@ -12,8 +13,6 @@ uint32_t cm_cntr = 0;
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-
-
 void proximity1_send_trigger();
 void proximity2_send_trigger();
 
@@ -72,58 +71,55 @@ uint32_t read_proximity_data()
 {
 	uint8_t measure_failed = 0;
 	uint32_t sum = 0;
-	uint8_t error_filter = 5;
 
-	for (int i = 0; i < error_filter; i++) {
+	for (int i = 0; i < ERROR_FILTER; i++) {
 		cm_cntr = 0;
 		proxim1_cntr = 0;
 		proxim_flag = 1;
 		proximity1_send_trigger();
 
-		while (proxim_flag == 0){
-#ifdef DEBUG_MODE
-			printf("interrupt 1.\n");
-#endif
-			HAL_Delay(3);
+		while (proxim_flag == 0) {
+
+			HAL_Delay(1);
+
 		}
 		proxim1_cntr = cm_cntr;
+
 #ifdef DEBUG_MODE
 		printf("proxim1_cntr: %lu", proxim1_cntr);
 #endif
-
-
+		HAL_Delay(3);
 		cm_cntr = 0;
 		proxim2_cntr = 0;
 		proxim_flag = 1;
 		proximity2_send_trigger();
 
-		while (proxim_flag == 0){
-#ifdef DEBUG_MODE
-			printf("interrupt 2.\n");
-#endif
+		while (proxim_flag == 0) {
+
 			HAL_Delay(3);
 		}
 		proxim2_cntr = cm_cntr;
 #ifdef DEBUG_MODE
 		printf("proxim2_cntr: %lu - \n", proxim2_cntr);
 #endif
-
 		if ((proxim1_cntr > 600) || (proxim2_cntr > 600)) {
 			//measure failure
 			measure_failed++;
 
 		} else if ((proxim1_cntr <= 600) && (proxim2_cntr <= 600)) {
-			sum = sum + (proxim1_cntr + proxim2_cntr);
+			sum += (proxim1_cntr + proxim2_cntr);
+
 		}
 	}
 
-	distance = sum / (2 * (error_filter - measure_failed));
+	distance = sum / (2 * (ERROR_FILTER - measure_failed));
 
 #ifdef DEBUG_MODE
 	printf("distance: %lu, failure: %d\n\n", distance, measure_failed);
 #endif
 
 	return distance;
+
 }
 
 uint8_t process_proximity(uint32_t distance)

@@ -3,12 +3,11 @@
 #include "servo_control.h"
 #include "motor_control.h"
 #include "proximity_driver.h"
-#include "adc_driver.h"
+//#include "adc_driver.h"
 
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 uint8_t button_pressed = 0;
-uint32_t measured_distance = 0;
 
 void control_thread()
 {
@@ -23,7 +22,7 @@ void control_thread()
 			}
 		}
 		// check for any object
-		measured_distance = read_proximity_data();
+		uint32_t measured_distance = read_proximity_data();
 		process_proximity(measured_distance);
 #ifdef DEBUG_MODE
 		printf("\n\ndistance: %lu\n", measured_distance);

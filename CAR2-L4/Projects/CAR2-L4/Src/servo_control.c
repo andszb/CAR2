@@ -2,7 +2,7 @@
 #include "servo_control.h"
 #include "adc_driver.h"
 
-#define LINE_DETECT_DELAY 100
+#define LINE_DETECT_DELAY 10
 #define MAX_ANGLE 36.0
 #define MIN_ANGLE -36.0
 #define DUTY_EXCHANGE_RATE 0.0694
@@ -104,7 +104,7 @@ void turn_servo(int8_t line_position_tmp)
 		printf("angle: %f, duty: %f; ", angle, duty);
 #endif
 			}
-			//HAL_Delay(3);
+			handle_line_position();
 		}
 		//if there is still no line detected, try to turn to the opposite direction
 		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
@@ -123,11 +123,9 @@ void turn_servo(int8_t line_position_tmp)
 		printf("angle: %f, duty: %f; ", angle, duty);
 #endif
 			}
-			//HAL_Delay(3);
+			handle_line_position();
 		}
 		//if no line is found, stop the car
-	} else {
-		//stop car!
 		required_rpm = 0;
 	}
 }
