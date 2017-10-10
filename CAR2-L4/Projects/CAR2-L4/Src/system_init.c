@@ -172,6 +172,8 @@ int8_t portB_init()
 	GPIO_InitDef.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitDef);
 
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
 #ifdef DEBUG_MODE
 	printf("Proxim trigger1 init done.\n");
 #endif
@@ -201,8 +203,6 @@ int8_t portB_init()
 	printf("Motor direction pin init done.\n");
 #endif
 
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-
 	// Initialize D14 and D15 (PB9 and PB8) as sensor group control
 	GPIO_InitDef.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef.Pull = GPIO_PULLDOWN;
@@ -213,8 +213,8 @@ int8_t portB_init()
 #ifdef DEBUG_MODE
 	printf("Sensor groups pin init done.\n");
 #endif
-	//Turn on line sensor leds
 
+	//Turn on line sensor leds
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
 
@@ -254,11 +254,11 @@ int8_t portD_init()
 	GPIO_InitDef.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(GPIOD, &GPIO_InitDef);
 
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+
 #ifdef DEBUG_MODE
 	printf("Proxim trigger2 init done.\n");
 #endif
-
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
 
 	return 0;
 }

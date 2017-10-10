@@ -9,14 +9,6 @@
 #include "wifi.h"
 #include "cmsis_os.h"
 
-typedef struct
-{
-	uint8_t buff_adc_data[9];
-	uint32_t buff_distance;
-	uint8_t line_feedback;
-
-} sensor_data;
-
 uint8_t user_command_flag;
 uint8_t wifi_flag;
 

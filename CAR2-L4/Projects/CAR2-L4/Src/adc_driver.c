@@ -26,19 +26,6 @@ int32_t background_sum = 0;
 int8_t cntr = 0;
 int8_t line_position;
 
-//define sensor data structure
-typedef struct {
-	int16_t sensor1_data;
-	int16_t sensor2_data;
-	int16_t sensor3_data;
-	int16_t sensor4_data;
-	int16_t sensor5_data;
-	int16_t sensor6_data;
-	int16_t sensor7_data;
-	int16_t sensor8_data;
-	int16_t sensor9_data;
-} sensor_data_t;
-
 void select_adc_channel(uint32_t sensor_nr);
 int16_t get_sensor1_value();
 int16_t get_sensor2_value();
@@ -55,24 +42,27 @@ int8_t calculate_line_position(sensor_data_t detected_color_tmp, int16_t backgro
 sensor_data_t process_sensor_data(sensor_data_t sensor_data_tmp);
 
 
-
 int8_t handle_line_position()
 {
 	no_line_flag = 1;
 	line_position = 100;
 
-	sensor_data_t sensor_data = get_line_sensor_data();
+	sensor_data = get_line_sensor_data();
 
 	sensor_data_t detected_color = process_sensor_data(sensor_data);
 
 	int16_t detected_background_color = calculate_background_color(detected_color);
+
 #ifdef DEBUG_MODE
 	printf("background_color: %d; ", detected_background_color);
 #endif
+
 	line_position = calculate_line_position(detected_color, detected_background_color);
+
 #ifdef DEBUG_MODE
 	printf("line position: %d; no line flag: %d", line_position, no_line_flag);
 #endif
+
 	return line_position;
 }
 
