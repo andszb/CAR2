@@ -397,7 +397,7 @@ void adc_init()
 
 static void EXTI9_5_IRQHandler_Config(void)
 {
-	/* Enable and set EXTI lines 3 Interrupt to priority 3*/
+	/* Enable and set EXTI lines 5 Interrupt to priority 3*/
 	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 3, 0);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }

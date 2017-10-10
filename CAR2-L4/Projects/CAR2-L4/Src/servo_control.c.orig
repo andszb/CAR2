@@ -3,7 +3,10 @@
 #include "motor_control.h"
 #include "adc_driver.h"
 
+<<<<<<< HEAD
+=======
 //#define DEBUG_MODE
+>>>>>>> andi_dev
 #define LINE_DETECT_DELAY 10
 #define MAX_ANGLE 36.0
 #define MIN_ANGLE -36.0
@@ -111,14 +114,43 @@ void turn_servo(int8_t line_position_tmp)
 #endif
 
 			}
+<<<<<<< HEAD
+			//HAL_Delay(3);
+		}
+		//if there is still no line detected, try to turn to the opposite direction
+		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++) {
+			if (last_line_position == 4){
+				angle = -36.0;
+				duty = calculate_duty(angle);
+				servo_pwm_set_duty(duty);
+
+#ifdef DEBUG_MODE
+				printf("angle: %f, duty: %f; ", angle, duty);
+#endif
+
+			} else if (last_line_position == -4) {
+				angle = 36.0;
+				duty = calculate_duty(angle);
+				servo_pwm_set_duty(duty);
+
+#ifdef DEBUG_MODE
+				printf("angle: %f, duty: %f; ", angle, duty);
+#endif
+
+			}
+			//HAL_Delay(3);
+=======
 			handle_line_position();
+>>>>>>> andi_dev
 		}
 
-
-
-
-
 		//if no line is found, stop the car
+<<<<<<< HEAD
+	} else {
+		//stop car!
 		stop();
+=======
+		required_rpm = 0;
+>>>>>>> andi_dev
 	}
 }
