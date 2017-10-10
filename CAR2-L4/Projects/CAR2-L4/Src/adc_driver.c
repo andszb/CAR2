@@ -320,12 +320,12 @@ int8_t calculate_line_position(sensor_data_t detected_color_tmp, int16_t backgro
 	}
 	if ((detected_color_tmp.sensor4_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor4_data < background_color_tmp - color_sensitivity)) {
-		line_position = 1;
+		line_position = 0;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor6_data > background_color_tmp + color_sensitivity) ||
 		(detected_color_tmp.sensor6_data < background_color_tmp - color_sensitivity)) {
-		line_position = -1;
+		line_position = 0;
 		no_line_flag = 0;
 	}
 	if ((detected_color_tmp.sensor3_data > background_color_tmp + color_sensitivity) ||

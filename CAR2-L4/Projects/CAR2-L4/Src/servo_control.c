@@ -2,6 +2,7 @@
 #include "servo_control.h"
 #include "adc_driver.h"
 
+//#define DEBUG_MODE
 #define LINE_DETECT_DELAY 10
 #define MAX_ANGLE 36.0
 #define MIN_ANGLE -36.0
@@ -13,8 +14,8 @@
  * Fast response, but system will overshoot.
  */
 
-float p_value = 986.96;
-float d_value = 57.03;
+float p_value = 1.0;
+float d_value = 0.1;
 int16_t angle_error = 0;
 int16_t prev_error = 0;
 int16_t difference = 0;
@@ -32,7 +33,7 @@ float calculate_duty(float angle_tmp)
 	float duty_tmp = (DUTY_EXCHANGE_RATE * angle_tmp) + DUTY_MID_POINT;
 
 #ifdef DEBUG_MODE
-	printf("angle: %f, duty: %f; ", angle_tmp, duty);
+	printf("duty: %f; ", duty_tmp);
 #endif
 	return duty_tmp;
 }
@@ -106,25 +107,7 @@ void turn_servo(int8_t line_position_tmp)
 			}
 			handle_line_position();
 		}
-		//if there is still no line detected, try to turn to the opposite direction
-		for (int8_t i = 0; i < LINE_DETECT_DELAY; i++){
-			if (last_line_position == 4){
-				angle = -36.0;
-				duty = calculate_duty(angle);
-				servo_pwm_set_duty(duty);
-#ifdef DEBUG_MODE
-		printf("angle: %f, duty: %f; ", angle, duty);
-#endif
-			} else if (last_line_position == -4){
-				angle = 36.0;
-				duty = calculate_duty(angle);
-				servo_pwm_set_duty(duty);
-#ifdef DEBUG_MODE
-		printf("angle: %f, duty: %f; ", angle, duty);
-#endif
-			}
-			handle_line_position();
-		}
+
 		//if no line is found, stop the car
 		required_rpm = 0;
 	}
