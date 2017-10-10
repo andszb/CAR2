@@ -7,27 +7,27 @@
 
 //#define DEBUG_MODE
 
-uint8_t button_pressed = 0;
+//uint8_t button_pressed = 0;
 uint32_t measured_distance = 0;
 
 void control_thread()
 {
-//	required_rpm = 200;
 	while (1) {
 		if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) {
-			if (!button_pressed) {
+//			if (!button_pressed) {
 				go();
-				button_pressed = 1;
-				osDelay(100);
-			} else {
-				stop();
-				button_pressed = 0;
-				osDelay(100);
-			}
+//				motor_pwm_set_duty(17);
+//				button_pressed = 1;
+//				HAL_Delay(100);
+//			} else {
+//				stop();
+//				button_pressed = 0;
+//				HAL_Delay(100);
+//			}
 		}
 		// check for any object
-//		measured_distance = read_proximity_data();
-//		process_proximity(measured_distance);
+		measured_distance = read_proximity_data();
+		process_proximity(measured_distance);
 
 #ifdef DEBUG_MODE
 		printf("\n\ndistance: %lu\n", measured_distance);

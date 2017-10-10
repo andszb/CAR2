@@ -92,7 +92,6 @@ int main(void)
 	/* We should never get here as control is now taken by the scheduler */
 	for (;;) {
 
-
 	}
 }
 
