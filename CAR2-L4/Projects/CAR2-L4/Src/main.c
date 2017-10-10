@@ -106,6 +106,9 @@ static void StartThread(void const * argument)
 	osThreadDef(control, control_thread, osPriorityHigh, 0, configMINIMAL_STACK_SIZE * 4);
 	osThreadCreate(osThread(control), NULL);
 
+	osThreadDef(wifi, wifi_comm_thread, osPriorityIdle, 0, configMINIMAL_STACK_SIZE * 2);
+	osThreadCreate(osThread(wifi), NULL);
+
 	terminate_thread();
 }
 

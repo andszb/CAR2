@@ -3,6 +3,7 @@
 #include "servo_control.h"
 #include "motor_control.h"
 #include "proximity_driver.h"
+#include "wifi_functions.h"
 //#include "adc_driver.h"
 
 #define DEBUG_MODE
@@ -44,6 +45,7 @@ void control_thread()
 		// control motor via wheel rpm
 		float dc = pi_control();
 		motor_pwm_set_duty(dc);
+
 		osDelay(1);
 	}
 

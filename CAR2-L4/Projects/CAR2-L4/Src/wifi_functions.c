@@ -18,7 +18,7 @@ typedef struct
 	uint8_t line_feedback;
 } data_packet;
 
-uint8_t remote_ip[] = {10, 27, 99, 70};
+uint8_t remote_ip[] = {10, 27, 99, 26};
 uint16_t remote_port = 8002;
 int8_t rec_data;
 uint8_t  mac_addr[6];

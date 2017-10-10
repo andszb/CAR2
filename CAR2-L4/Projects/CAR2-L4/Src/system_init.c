@@ -1,5 +1,5 @@
 #include "system_init.h"
-
+#include "wifi_functions.h"
 #define DEBUG_MODE
 
 GPIO_InitTypeDef GPIO_InitDef;
@@ -33,7 +33,7 @@ int8_t system_init()
 	BSP_LED_Init(LED2);
 	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 	uart_init();
-
+	wifi_init();
 	/* Output without printf, using HAL function*/
 	char msg[] = "UART HAL Example\r\n";
 	HAL_UART_Transmit(&uart_handle, (uint8_t *)msg, strlen(msg), 100);
